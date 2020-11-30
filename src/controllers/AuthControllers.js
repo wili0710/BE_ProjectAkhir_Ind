@@ -67,11 +67,17 @@ module.exports={
     ConfirmOtp: async (req,res)=>{
         let {otp,email}=req.body
         let sql=`select otp from users where email = ${db.escape(email)}`
+        // Ambil OTP Token dari Database
         try{
             const otptoken=await DbPROMselect(sql)
             let istrue=OtpConfirm(otp,otptoken[0].otp)
-            // console.log("jalan")
+            // Menyamakan OTP dari User dan Database
+
             if(istrue===true){
+                let senttosql={statusver:1}
+                // Update status verifikasi menjadi 1:Terverifikasi
+                sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
+                const userupdate=await DbPROMselect(sql)
                 return res.status(200).send(message='OTP Benar')
             }else if(istrue===false){
                 return res.status(200).send(message='OTP SALAH')
@@ -83,4 +89,25 @@ module.exports={
             return res.status(500).send(err)
         }
     },
+    Register:async(req,res)=>{
+        const {name,email,password,alamat,nomortelfon} = req.body
+        if(password==null || nomortelfon==null){
+            return res.status(500).send("Ada kesalahan")
+        }
+        let senttosql={
+            name,
+            password:encrypt(password),
+            lastlogin:new Date(),
+            alamat,
+            nomortelfon
+        }
+        let sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
+        const userupdate=await DbPROMselect(sql)
+        sql=`select id,name,email,roleid,alamat,nomortelfon from users where email=${db.escape(email)}`
+        const getUser=await DbPROMselect(sql)
+        const token=createJWToken({id:getUser[0].id,email:getUser[0].email})
+        getUser[0].token=token
+        
+        return res.send(getUser[0])
+    }
 }

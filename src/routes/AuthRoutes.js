@@ -3,5 +3,6 @@ const {AuthControllers}=require('./../controllers')
 
 Router.post('/s_r_otp',AuthControllers.SentOtpRegister)
 Router.post('/c_otp',AuthControllers.ConfirmOtp)
+Router.post('/register',AuthControllers.Register)
 
 module.exports=Router

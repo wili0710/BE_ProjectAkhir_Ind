@@ -5,8 +5,8 @@ const otpconfirm=(otpfe,otptokensql)=>{
     let otpsql=jwt.verify(otptokensql, "spiritking", (error,decoded)=>{
 
         // OTP Token di decoded untuk mengembalikan ke aslinya. OTP ada di otpsql.otp setelah di decoded.
-        
         if(error){  
+            console.log(error)        
             // Jika kadaluarsa maka akan muncul error.
             return "expired" 
         }
