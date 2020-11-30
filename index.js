@@ -16,22 +16,16 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(express.static('public'))
 
-
-
 app.get('/',(req,res)=>{
-    // var dataku={
-    //     name:'dino'
-    // }
-    res.send('<h1>selamat datang di API</h1>')
+    res.send('<h1>API Project Akhir Kelompok 2 </h1>')
 })
-// const {ProductRoutes,karyawanRoutes,usersRoutes,MongoRoutes,MongooseRouters,SocketRoutes} = require('./Routes')
-// const {AuthRoutes,ProductRoutes,TransactionsRoutes } = require('./src/Routes')
 
-// app.use('/auth',AuthRoutes)
-// app.use('/product',ProductRoutes)
-// app.use('/trans',TransactionsRoutes)
+const {AuthRoutes} = require('./src/routes')
 
-var schedule=require('node-schedule')
+app.use('/auth',AuthRoutes)
+
+
+// var schedule=require('node-schedule')
 
 // var j = schedule.scheduleJob(" */10 *  * * * *",function(){
 //     console.log('the answer to life, the universe, and everything')

@@ -1,6 +1,3 @@
-const AuthRoutes=require('./AuthRoutes')
-
-
 module.exports={
-    AuthRoutes
+    AuthRoutes:require('./AuthRoutes')
 }
