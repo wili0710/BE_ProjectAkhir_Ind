@@ -1,3 +1,5 @@
 module.exports={
-    AuthRoutes:require('./AuthRoutes')
+    AuthRoutes:require('./AuthRoutes'),
+    AdminRoutes:require('./AdminRoutes'),
+    ProductRoutes:require('./ProductRoutes')
 }

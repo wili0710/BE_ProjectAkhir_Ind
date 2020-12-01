@@ -53,7 +53,9 @@ module.exports={
                          })
                     }
         })
+    
         console.log(hashpassword)
+    },
         // db.query(sql,[email,password],(err,datausers)=>{
         //     if(err){
         //         console.log(err)
@@ -74,6 +76,7 @@ module.exports={
         //          where c.UserId = ?`
     
     //Table user di database yang non-null diubah menjadi hanya id dan email
+    
     SentOtpRegister: async (req,res)=>{
         console.log("jalan")
         let {email}=req.body
@@ -115,6 +118,7 @@ module.exports={
             })
 
         }catch(err){
+            console.log('error di line 121')
             return res.status(500).send(err)
         }
     },
