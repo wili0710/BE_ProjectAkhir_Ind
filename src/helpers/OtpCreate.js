@@ -9,7 +9,7 @@ const otpcreate=()=>{
     } while (otp.length!==4);
     let newotp={
         otp:otp,
-        otptoken:jwt.sign({otp},"spiritking",{expiresIn:'5m'})
+        otptoken:jwt.sign({otp},"spiritking",{expiresIn:'1m'})
     }
     return newotp
 }
