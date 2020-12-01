@@ -25,9 +25,9 @@ app.get('/',(req,res)=>{
     res.send('<h1>selamat datang di API</h1>')
 })
 // const {ProductRoutes,karyawanRoutes,usersRoutes,MongoRoutes,MongooseRouters,SocketRoutes} = require('./Routes')
-// const {AuthRoutes,ProductRoutes,TransactionsRoutes } = require('./src/Routes')
+const {AuthRoutes } = require('./src/Routes')
 
-// app.use('/auth',AuthRoutes)
+app.use('/auth',AuthRoutes)
 // app.use('/product',ProductRoutes)
 // app.use('/trans',TransactionsRoutes)
 
