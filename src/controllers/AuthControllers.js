@@ -22,6 +22,7 @@ module.exports={
     
     //Table user di database yang non-null diubah menjadi hanya id dan email
     SentOtpRegister: async (req,res)=>{
+        console.log("jalan")
         let {email}=req.body
         let otpnew=OtpCreate()
         let senttosql={
@@ -56,7 +57,7 @@ module.exports={
                 if(err){
                     return res.status(500).send({message:err.message})
                 }
-                console.log()
+                console.log("OTP Berhasil dikirim")
                 return res.send(true)
             })
 
