@@ -74,6 +74,7 @@ module.exports={
         //          where c.UserId = ?`
     
     //Table user di database yang non-null diubah menjadi hanya id dan email
+    },
     SentOtpRegister: async (req,res)=>{
         console.log("jalan")
         let {email}=req.body
