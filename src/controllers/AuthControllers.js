@@ -75,11 +75,13 @@ module.exports={
             // Menyamakan OTP dari User dan Database
 
             if(istrue===true){
-                let senttosql={statusver:1}
+                let senttosql={statusver:1,otp:""}
                 // Update status verifikasi menjadi 1:Terverifikasi
                 sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
                 const userupdate=await DbPROMselect(sql)
-                return res.status(200).send(message='OTP Benar')
+                sql=`select otp from users where email = ${db.escape(email)}`
+                const getUser=await DbPROMselect(sql)
+                return res.status(200).send({message:'OTP Benar',getUser})
             }else if(istrue===false){
                 return res.status(200).send(message='OTP SALAH')
             }
