@@ -1,6 +1,7 @@
-const AuthRoutes=require('./AuthRoutes')
-
-
 module.exports={
-    AuthRoutes
+    AuthRoutes:require('./AuthRoutes'),
+    PaymentRoutes:require('./PaymentRoutes'),
+    TransactionRoutes:require('./TransactionRoutes'),
+    AdminRoutes:require('./AdminRoutes'),
+    ProductRoutes:require('./ProductRoutes')
 }
