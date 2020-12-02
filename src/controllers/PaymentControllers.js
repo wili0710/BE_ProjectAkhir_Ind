@@ -77,13 +77,27 @@ module.exports={
     },
     // GetPaymentInWaiting untuk get data payment yang status waiting admin
     GetPaymentInWaiting:async(req,res)=>{
-        let sql=`select up.id as payment_id,transaksi_id,
-                tanggaltransaksi,tglexp,image,totalpayment,t.totaltransaksi
-                from userpayment up
-                join transaksi t
-                on up.transaksi_id=t.id
-                where up.status="waiting admin"
-                ;`
+        let {page}=req.query
+        let sql
+        console.log(page)
+        if(page){
+            sql=`select up.id as payment_id,transaksi_id,
+            tanggaltransaksi,tglexp,image,totalpayment,t.totaltransaksi
+            from userpayment up
+            join transaksi t
+            on up.transaksi_id=t.id
+            where up.status="waiting admin"
+            limit ${(page-1)*3},3
+            ;`
+        }else{
+            sql=`select up.id as payment_id,transaksi_id,
+            tanggaltransaksi,tglexp,image,totalpayment,t.totaltransaksi
+            from userpayment up
+            join transaksi t
+            on up.transaksi_id=t.id
+            where up.status="waiting admin"
+            ;`
+        }
         const getData=await DbPROMselect(sql)
         console.log(getData)
         console.log("get payment berhasil")
