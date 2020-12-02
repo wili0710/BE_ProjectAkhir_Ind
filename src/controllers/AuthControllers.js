@@ -102,7 +102,7 @@ module.exports={
             const htmlemail=template({email:email,link:link,otp:otp})
 
             transporter.sendMail({
-                from:"Development Phase<wiliromarioakukom@gmail.com>",
+                from:"Sorry<hearttoheart@gmail.com>",
                 to:email,
                 subject:'OTP',
                 html:htmlemail
