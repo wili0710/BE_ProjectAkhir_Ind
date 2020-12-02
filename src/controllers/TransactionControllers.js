@@ -29,5 +29,5 @@ module.exports={
         const upload=await DbPROMselect(sql)
         console.log("upload transaksi berhasil")
         return res.send(true)
-    }
+    },
 }

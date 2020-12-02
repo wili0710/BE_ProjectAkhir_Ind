@@ -31,6 +31,35 @@ module.exports={
         let sql=`insert into userpayment set ${db.escape(senttosql)}`
         const upload=await DbPROMselect(sql)
         console.log("upload payment non transfer berhasil")
+        sql=`select u.email,t.totaltransaksi,td.qty as jumlah, td.hargabeli,td.parcel_id,p.nama from transaksi t
+            join transaksidetail td
+            on t.id=td.transaksi_id
+            join products p
+            on td.products_id=p.id
+            join users u 
+            on t.users_id=u.id
+            where t.id=6;`
+        const datatransaction=await DbPROMselect(sql)
+        const email=datatransaction[0].email
+
+        console.log(datatransaction)
+        console.log(email)
+        console.log("sini")
+        const htmlrender=fs.readFileSync('./src/emailtemplate/transactionreceipt.html','utf8')
+            const template=handlebars.compile(htmlrender) //return function
+            const htmlemail=template({transaksi_id:transaksi_id})
+
+            transporter.sendMail({
+                from:"Sorry<hearttoheart@gmail.com>",
+                to:email,
+                subject:'Transaction Receipt',
+                html:htmlemail
+            },(err)=>{
+                if(err){
+                    return res.status(500).send({message:err.message})
+                }
+                console.log("Transaction Receipt berhasil dikirim")
+            })
         return res.send(true)
     },
     UploadPaymentTransfer:async(req,res)=>{
