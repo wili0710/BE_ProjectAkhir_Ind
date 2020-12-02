@@ -1,3 +1,5 @@
 module.exports={
-    AuthRoutes:require('./AuthRoutes')
+    AuthRoutes:require('./AuthRoutes'),
+    PaymentRoutes:require('./PaymentRoutes'),
+    TransactionRoutes:require('./TransactionRoutes')
 }

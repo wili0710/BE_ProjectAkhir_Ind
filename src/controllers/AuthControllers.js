@@ -1,8 +1,6 @@
 const {db}=require('../connections')
 const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend}=require('../helpers')
-// const OtpConfirm=require('../helpers/OtpConfirm')
 const {createJWToken} = require('../helpers/jwt')
-const nodemailer = require('nodemailer')
 const fs =require('fs')
 const handlebars=require('handlebars')
 
