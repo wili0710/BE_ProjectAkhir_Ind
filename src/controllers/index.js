@@ -3,5 +3,7 @@ const PaymentControllers = require('./PaymentControllers');
 module.exports={
     AuthControllers:require('./AuthControllers'),
     PaymentControllers:require('./PaymentControllers'),
-    TransactionControllers:require('./TransactionControllers')
+    TransactionControllers:require('./TransactionControllers'),
+    AdminControllers:require('./AdminControllers'),
+    ProductControllers:require('./ProductControllers')
 }
