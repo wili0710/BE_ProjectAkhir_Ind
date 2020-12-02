@@ -3,6 +3,7 @@ const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend}=require('../help
 const {createJWToken} = require('../helpers/jwt')
 const fs =require('fs')
 const handlebars=require('handlebars')
+const { transaksi } = require('./TransactionControllers')
 
 const DbPROMselect=(sql)=>{
     return new Promise((resolve,reject)=>{
@@ -33,12 +34,17 @@ module.exports={
     },
     // Confirm Payment untuk ubah status Payment menjadi confirmed
     ConfirmPayment:async(req,res)=>{
-        const {id}=req.body
+        const {payment_id,transaksi_id}=req.body
+        console.log(req.body)
         let senttosql={status:"confirmed"}
-        let sql=`update userpayment set ${db.escape(senttosql)} where id=${id}`
+        let sql=`update userpayment set ${db.escape(senttosql)} where id=${payment_id}`
         const updatePayment=await DbPROMselect(sql)
         console.log("update payment")
         
+        sentosql={status:"admin confirmed"}
+        sql=`update transaksi set ${db.escape(senttosql)} where id=${transaksi_id}`
+        const updateTransaksi=await DbPROMselect(sql)
+
         sql=`select up.id as payment_id,transaksi_id,
                 tanggaltransaksi,tglexp,image,totalpayment,t.totaltransaksi
                 from userpayment up
