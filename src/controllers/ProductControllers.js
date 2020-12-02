@@ -120,6 +120,53 @@ module.exports={
         })
     },
 
+    deleteProduct:(req,res)=>{
+        let {id} = req.body
+        let sql =`delete from products where id=${id} `
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from products` 
+            db.query(sql,(err,dataproduct)=>{
+                if(err) return res.status(500).send(err)
+                return res.status(200).sed(dataproduct)
+            })
+        })
+    },
+
+    deleteCatproduct:(req,res)=>{
+        let {id}= req.body
+        let sql=`delete from categoryproduct where id=${id}`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from categoryproduct`
+            db.query(sql,(err,datacat)=>{
+                if(err) return res.status(500).send(err)
+                return res.status(200).send(datacat)
+            })
+        })
+    },
+
+    deleteCatParcel:(req,res)=>{
+        let {id}= req.body
+        let sql=`delete from categoryparcel where id=${id}`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from categoryparcel`
+            db.query(sql,(err,datapar)=>{
+                if(err) return res.status(500).send(err)
+                return res.status(200).send(datapar)
+            })
+        })
+    }
+
+ 
+
+
+    
+
+
+
+
     
     
 
