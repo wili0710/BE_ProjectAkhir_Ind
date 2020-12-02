@@ -147,12 +147,12 @@ module.exports={
         }
     },
     Register:async(req,res)=>{
-        const {name,email,password,alamat,nomortelfon} = req.body
+        const {nama,email,password,alamat,nomortelfon} = req.body
         if(password==null || nomortelfon==null){
             return res.status(500).send("Ada kesalahan")
         }
         let senttosql={
-            name,
+            nama,
             password:encrypt(password),
             lastlogin:new Date(),
             alamat,
@@ -160,7 +160,7 @@ module.exports={
         }
         let sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
         const userupdate=await DbPROMselect(sql)
-        sql=`select id,name,email,roleid,alamat,nomortelfon from users where email=${db.escape(email)}`
+        sql=`select id,nama,email,role,alamat,nomortelfon from users where email=${db.escape(email)}`
         const getUser=await DbPROMselect(sql)
         const token=createJWToken({id:getUser[0].id,email:getUser[0].email})
         getUser[0].token=token
