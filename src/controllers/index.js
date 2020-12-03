@@ -5,5 +5,6 @@ module.exports={
     PaymentControllers:require('./PaymentControllers'),
     TransactionControllers:require('./TransactionControllers'),
     AdminControllers:require('./AdminControllers'),
-    ProductControllers:require('./ProductControllers')
+    ProductControllers:require('./ProductControllers'),
+    ParcelController:require('./ParcelController')
 }
