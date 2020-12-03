@@ -24,7 +24,8 @@ module.exports={
         let datainsert = { 
             nama                : name,
             harga               : price,
-            categoryparcel_id   : category
+            categoryparcel_id   : category,
+            gambar
         };
         let sql = `INSERT INTO parcel SET ?`;
         db.beginTransaction((error)=>{
