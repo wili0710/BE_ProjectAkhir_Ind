@@ -13,5 +13,9 @@ Router.delete('/deleteprod',ProductControllers.deleteProduct)
 Router.delete('/deletecatprod',ProductControllers.deleteCatproduct)
 Router.delete('/deletecatparcel',ProductControllers.deleteCatParcel)
 
+
+Router.post('/deleteprod',ProductControllers.deleteProd)
+Router.post('/deletecatprod',ProductControllers.deleteCatProd)
+Router.post('/deletecatparcel',ProductControllers.deleteCatParcel)
 module.exports=Router
 
