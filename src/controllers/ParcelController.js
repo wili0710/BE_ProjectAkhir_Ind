@@ -6,9 +6,9 @@ const QueryProm = (sql) => {
     return new Promise ((resolve,reject)=>{
         db.query(sql,(error,result)=>{
             if (error) {
-                reject(error)
+                reject(error);
             }else{
-                resolve(result)
+                resolve(result);
             };
         });
     });
@@ -17,7 +17,7 @@ const QueryProm = (sql) => {
 module.exports={
     addParcel:(request,response) => {
         const {name, price, category, item} = request.body;
-        console.log(name,price,category,item)
+        console.log(name,price,category,item);
         // const path='/parcel'
         // const upload=uploader.uploader(path,'BUKTI').fields([{ name: 'bukti' }])
         let datainsert = { 
@@ -28,16 +28,16 @@ module.exports={
         let sql = `INSERT INTO parcel SET ?`;
         db.beginTransaction((error)=>{
             // ***** //
-            if(error) return response.status(500).send({message:error+"Add a"})
+            if(error) return response.status(500).send({message:error+"Add a"});
             // ***** //
             db.query(sql,datainsert,(error)=>{
                 // ***** //
-                if(error) return response.status(500).send({message:error+"Add b"})
+                if(error) return response.status(500).send({message:error+"Add b"});
                 // ***** //
                 sql = `SELECT * FROM parcel WHERE nama=${db.escape(name)}`
                 db.query(sql,(error,dataparcel)=>{
                     // ***** //
-                    if(error) return response.status(500).send({message:error+"Add c"})
+                    if(error) return response.status(500).send({message:error+"Add c"});
                     // ***** //
                     let arr = [];
                     item.forEach((val) => {
@@ -54,23 +54,23 @@ module.exports={
                             // ***** //
                             if(error) {
                                 return db.rollback(()=>{
-                                    response.status(500).send(error)
-                                })
-                            }
+                                    response.status(500).send(error);
+                                });
+                            };
                             // ***** //
-                            console.log(result)
-                            return response.status(200).send("Data Parcel Baru berhasil di input")
+                            console.log(result);
+                            return response.status(200).send("Data Parcel Baru berhasil di input");
                         });
                     }).catch((error)=>{
                         // ***** //
                         if(error) {
                             return db.rollback(()=>{
-                                response.status(500).send(error)
+                                response.status(500).send(error);
                             });
                         };
                         // ***** //
-                        console.log(error+"Add d")
-                        return response.status(500).send(error)
+                        console.log(error+"Add d");
+                        return response.status(500).send(error);
                     });
                 });
             });
