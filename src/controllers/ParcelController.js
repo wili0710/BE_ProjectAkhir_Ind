@@ -1,6 +1,7 @@
 const {db}=require('../connections')
 const {uploader} = require('./../helpers')
-const fs=require('fs')
+const fs=require('fs');
+const { response } = require('express');
 
 const QueryProm = (sql) => {
     return new Promise ((resolve,reject)=>{
@@ -16,7 +17,7 @@ const QueryProm = (sql) => {
 
 module.exports={
     addParcel:(request,response) => {
-        const {name, price, category, item} = request.body;
+        const {name, price, category, gambar, item} = request.body;
         console.log(name,price,category,item);
         // const path='/parcel'
         // const upload=uploader.uploader(path,'BUKTI').fields([{ name: 'bukti' }])
@@ -75,5 +76,22 @@ module.exports={
                 });
             });
         });
+    },
+    uploadParcelImg:(request,response) => {
+        try {
+            const path='/parcel'
+            const upload = uploader.uploader(path, 'PARCEL').fields([{ name: 'image'}]);
+            upload(request,response, (error) => {
+                //*****//
+                if(error) return response.status(500).json({message:'upload foto gagal', error: error.message});
+                //*****//
+                console.log(request.files.image);
+                const {image} = request.files;
+                let imagePath = path + '/' + image[0].filename;
+                response.status(200).send(imagePath);
+            });
+        } catch(error) {
+            return response.status(500).send({message: error.message}+ "d");
+        };
     }
 };
