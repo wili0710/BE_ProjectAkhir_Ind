@@ -3,6 +3,7 @@ const jwt=require('jsonwebtoken')
 const otpconfirm=(otpfe,otptokensql)=>{  
     // OTP FE -> OTP Input dari user di Front-End. OTP Token SQL -> OTP dari Database SQL berupa Token.
     let otpsql=jwt.verify(otptokensql, "spiritking", (error,decoded)=>{
+        console.log(decoded)
 
         // OTP Token di decoded untuk mengembalikan ke aslinya. OTP ada di otpsql.otp setelah di decoded.
         if(error){  

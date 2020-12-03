@@ -1,8 +1,6 @@
 const {db}=require('../connections')
 const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend}=require('../helpers')
-// const OtpConfirm=require('../helpers/OtpConfirm')
 const {createJWToken} = require('../helpers/jwt')
-const nodemailer = require('nodemailer')
 const fs =require('fs')
 const handlebars=require('handlebars')
 
@@ -76,8 +74,7 @@ module.exports={
         //          where c.UserId = ?`
     
     //Table user di database yang non-null diubah menjadi hanya id dan email
-    
-    SentOtpRegister: async (req,res)=>{
+    SentOtpRegister:async (req,res)=>{
         console.log("jalan")
         let {email}=req.body
         let otpnew=OtpCreate()
@@ -105,7 +102,7 @@ module.exports={
             const htmlemail=template({email:email,link:link,otp:otp})
 
             transporter.sendMail({
-                from:"Development Phase<wiliromarioakukom@gmail.com>",
+                from:"Sorry<hearttoheart@gmail.com>",
                 to:email,
                 subject:'OTP',
                 html:htmlemail
@@ -132,11 +129,13 @@ module.exports={
             // Menyamakan OTP dari User dan Database
 
             if(istrue===true){
-                let senttosql={statusver:1}
+                let senttosql={statusver:1,otp:""}
                 // Update status verifikasi menjadi 1:Terverifikasi
                 sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
                 const userupdate=await DbPROMselect(sql)
-                return res.status(200).send(message='OTP Benar')
+                sql=`select otp from users where email = ${db.escape(email)}`
+                const getUser=await DbPROMselect(sql)
+                return res.status(200).send({message:'OTP Benar',getUser})
             }else if(istrue===false){
                 return res.status(200).send(message='OTP SALAH')
             }
@@ -148,12 +147,12 @@ module.exports={
         }
     },
     Register:async(req,res)=>{
-        const {name,email,password,alamat,nomortelfon} = req.body
+        const {nama,email,password,alamat,nomortelfon} = req.body
         if(password==null || nomortelfon==null){
             return res.status(500).send("Ada kesalahan")
         }
         let senttosql={
-            name,
+            nama,
             password:encrypt(password),
             lastlogin:new Date(),
             alamat,
@@ -162,7 +161,7 @@ module.exports={
 
         let sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
         const userupdate=await DbPROMselect(sql)
-        sql=`select id,name,email,roleid,alamat,nomortelfon from users where email=${db.escape(email)}`
+        sql=`select id,nama,email,role,alamat,nomortelfon from users where email=${db.escape(email)}`
         const getUser=await DbPROMselect(sql)
         const token=createJWToken({id:getUser[0].id,email:getUser[0].email})
         getUser[0].token=token
