@@ -2,8 +2,9 @@ const encrypt =require('./encrypt')
 
 module.exports={
     encrypt,
-    transporter:require('./mailers'),
-    OtpCreate:require('./OtpCreate'),
-    OtpConfirm:require('./OtpConfirm'),
-    Link_Frontend:"http://localhost:3000",
+    uploader        : require('./uploader'),
+    transporter     : require('./mailers'),
+    OtpCreate       : require('./OtpCreate'),
+    OtpConfirm      : require('./OtpConfirm'),
+    Link_Frontend   : "http://localhost:3000",
 }
