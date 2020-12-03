@@ -9,9 +9,6 @@ const DbPROMselect=(sql,imagePath=false)=>{
     return new Promise((resolve,reject)=>{
         db.query(sql,(err,results)=>{
             if(err){
-                if(imagePath){
-                    fs.unlinkSync('./public'+imagePath)
-                }
                 reject(err)
             }else{
                 resolve(results)
@@ -87,7 +84,14 @@ module.exports={
                 status:"waiting admin"
             }
             let sql=`insert into userpayment set ${db.escape(senttosql)}`
-            const upload=await DbPROMselect(sql)
+            db.query(sql,(err)=>{
+                if(err){
+                    if(imagePath){
+                        fs.unlinkSync('./public'+imagePath)
+                    }
+                    return res.status(500).send(err)
+                }
+            })
             return res.send(true)
         })
 
