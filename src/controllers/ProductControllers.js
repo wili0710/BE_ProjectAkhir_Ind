@@ -205,6 +205,26 @@ module.exports={
                 return res.send(datacatpar)
             })
         })
+    },
+
+    getDataParcel:(req,res)=>{
+        let sql=`select * from parcel 
+        where isdeleted = 0;`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
+    getDataParcelByAll:(req,res)=>{
+        let sql= `select * from parcel p 
+        join parcel_has_categoryproduct ph
+        on p.id=ph.parcel_id
+        join categoryproduct cp
+        on cp.id = ph.categoryproduct_id`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
     }
 
  
