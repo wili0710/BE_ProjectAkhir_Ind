@@ -20,5 +20,8 @@ Router.post('/deletecatparcel',ProductControllers.deleteCatParcel)
 
 Router.get('/getDataParcel',ProductControllers.getDataParcel)
 Router.post('/getDataParcelByAll',ProductControllers.getDataParcelByAll)
+Router.post('/getDataProductMinuman',ProductControllers.getDataProductMinuman)
+Router.post('/getDataProductMakanan',ProductControllers.getDataProductMakanan)
+Router.post('/getDataProductChocolate',ProductControllers.getDataProductChocolate)
 module.exports=Router
 

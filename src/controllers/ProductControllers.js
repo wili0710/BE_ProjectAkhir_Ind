@@ -225,7 +225,32 @@ module.exports={
             if(err) return res.status(500).send(err)
             return res.send(result)
         })
+    },
+
+    getDataProductMinuman:(req,res)=>{
+        let sql=`select * from products where categoryproduct_id =1 and isdeleted=0`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
+    getDataProductMakanan:(req,res)=>{
+        let sql=`select * from products where categoryproduct_id=2 and isdeleted=0`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
+    getDataProductChocolate:(req,res)=>{
+        let sql=`select * from products where categoryproduct_id=3 and isdeleted=0`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
     }
+    
+
+
 
  
 
