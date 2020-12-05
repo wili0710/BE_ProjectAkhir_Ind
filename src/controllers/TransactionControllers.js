@@ -17,21 +17,9 @@ const DbPROMselect=(sql)=>{
     })
 }
 module.exports={
-    // transaksi ini hanya utk ujicoba, sifarnya sementara
-    transaksi:async(req,res)=>{
-        const {users_id,}=req.body
-        let senttosql={
-            users_id,
-            lastupdate:new Date(),
-            status:"oncart",
-            totaltransaksi:239000
-        }
-        let sql=`insert into transaksi set ${db.escape(senttosql)}`
-        const upload=await DbPROMselect(sql)
-        console.log("upload transaksi berhasil")
-        return res.send(true)
-    },
     AddToCart:async(req,res)=>{
+        console.log("jalan")
+        console.log(req.body)
         const {user_id,products_id,parcel_id,qty,productforparcel_id,qtyproductforparcel}=req.body
         let sql= `select * from transaksi where status='oncart' and users_id=${db.escape(user_id)}`
         const getdatatransaksi=await DbPROMselect(sql)
@@ -103,10 +91,11 @@ module.exports={
                     return res.send(datacart)
                 }
             }else{
+
                 sql=`select * from transaksidetail td
                     join transaksidetail_has_products tdhp
                     on tdhp.transaksidetail_id=td.id
-                    where tdhp.products_id=${db.escape(productforparcel_id)} 
+                    where tdhp.products_id=("${db.escape(productforparcel_id)}")
                     and td.transaksi_id=${db.escape(getdatatransaksi[0].id)} and td.parcel_id=${db.escape(parcel_id)} and td.isdeleted=0`
                 const getdatatransaksidetail=await DbPROMselect(sql)
                 console.log(getdatatransaksidetail)
@@ -158,26 +147,32 @@ module.exports={
                     sql=`insert into transaksidetail set ${db.escape(senttosql)}`
                     const addproductocart=await DbPROMselect(sql)
 
-                    senttosql={
-                        transaksidetail_id:addproductocart.insertId,
-                        products_id:productforparcel_id,
-                        qty:qtyproductforparcel,
+                    for(let x=1;x<=productforparcel_id.length;x++){
+                        senttosql={
+                            transaksidetail_id:addproductocart.insertId,
+                            products_id:productforparcel_id[x-1],
+                            qty:qtyproductforparcel[x-1],
+                        }
+                        sql=`insert into transaksidetail_has_products set ${db.escape(senttosql)}`
+                        const addproductinparcel=await DbPROMselect(sql)
                     }
-                    sql=`insert into transaksidetail_has_products set ${db.escape(senttosql)}`
-                    const addproductinparcel=await DbPROMselect(sql)
+
                     
                     console.log("sini")
-                    sql=`select tdhp.qty*p.hargapokok as hargatotalpokok from transaksidetail_has_products tdhp
-                        join products p on p.id=tdhp.products_id
-                        where tdhp.transaksidetail_id=${db.escape(addproductocart.insertId)} and tdhp.products_id=${productforparcel_id}`
-                    const addhargatotal=await DbPROMselect(sql)
-                    console.log("saja")
-                    senttosql={
-                        hargatotalpokok:addhargatotal[0].hargatotalpokok
+                    for(let x=1;x<=productforparcel_id.length;x++){
+                        sql=`select tdhp.qty*p.hargapokok as hargatotalpokok from transaksidetail_has_products tdhp
+                            join products p on p.id=tdhp.products_id
+                            where tdhp.transaksidetail_id=${db.escape(addproductocart.insertId)} and tdhp.products_id=${productforparcel_id[x-1]}`
+                        const addhargatotal=await DbPROMselect(sql)
+                        console.log("saja")
+                        console.log(addhargatotal)
+                        senttosql={
+                            hargatotalpokok:addhargatotal[0].hargatotalpokok
+                        }
+                        sql=`update transaksidetail_has_products set ${db.escape(senttosql)}
+                        where transaksidetail_id=${db.escape(addproductocart.insertId)} and products_id=${productforparcel_id[x-1]}`
+                        const updatehargatotal=await DbPROMselect(sql)
                     }
-                    sql=`update transaksidetail_has_products set ${db.escape(senttosql)}
-                    where transaksidetail_id=${db.escape(addproductocart.insertId)} and products_id=${productforparcel_id}`
-                    const updatehargatotal=await DbPROMselect(sql)
 
                     sql=`select * from transaksidetail td
                     join transaksi t on td.transaksi_id=t.id
@@ -241,13 +236,15 @@ module.exports={
                 sql=`select * from products where id=${productforparcel_id}`
                 const getproducts=await DbPROMselect(sql)
                 console.log(getproducts)
-                senttosql={
-                    transaksidetail_id:addtotransaksidetail.insertId,
-                    products_id:productforparcel_id,
-                    qty:qtyproductforparcel,
+                for(let x=1;x<=productforparcel_id.length;x++){
+                    senttosql={
+                        transaksidetail_id:addtotransaksidetail.insertId,
+                        products_id:productforparcel_id,
+                        qty:qtyproductforparcel,
+                    }
+                    sql=`insert into transaksidetail_has_products set ${db.escape(senttosql)}`
+                    const addproductinparcel=await DbPROMselect(sql)
                 }
-                sql=`insert into transaksidetail_has_products set ${db.escape(senttosql)}`
-                const addproductinparcel=await DbPROMselect(sql)
 
                 sql=`select tdhp.qty*p.hargapokok as hargatotalpokok from transaksidetail_has_products tdhp
                     join products p on p.id=tdhp.products_id
