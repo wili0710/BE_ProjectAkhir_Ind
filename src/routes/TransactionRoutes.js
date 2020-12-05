@@ -3,7 +3,8 @@ const {TransactionControllers}=require('./../controllers')
 
 // Uji coba, sifatnya sementara
 Router.post('/addtocart',TransactionControllers.AddToCart)
-Router.post('/getcart',TransactionControllers.GetCart)
+Router.get('/getcart',TransactionControllers.GetCart)
+Router.post('/removefromcart',TransactionControllers.RemoveFromCart)
 
 
 module.exports=Router
