@@ -226,6 +226,19 @@ module.exports={
             return res.send(result)
         })
     },
+    getDataParcelById:(req,res)=>{
+        let {id}=req.params
+        let sql=`select * from parcel p 
+        join parcel_has_categoryproduct ph
+        on p.id=ph.parcel_id
+        join categoryproduct cp
+        on cp.id = ph.categoryproduct_id
+        where p.id = ${db.escape(id)}`
+        db.query(sql,(err,result)=>{
+            if(err)return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
 
     getDataProductMinuman:(req,res)=>{
         let sql=`select * from products where categoryproduct_id =1 and isdeleted=0`

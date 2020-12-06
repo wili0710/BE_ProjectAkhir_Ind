@@ -23,5 +23,6 @@ Router.post('/getDataParcelByAll',ProductControllers.getDataParcelByAll)
 Router.post('/getDataProductMinuman',ProductControllers.getDataProductMinuman)
 Router.post('/getDataProductMakanan',ProductControllers.getDataProductMakanan)
 Router.post('/getDataProductChocolate',ProductControllers.getDataProductChocolate)
+Router.get('/getDataParcelById/:id',ProductControllers.getDataParcelById)
 module.exports=Router
 
