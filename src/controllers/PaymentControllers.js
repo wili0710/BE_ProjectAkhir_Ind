@@ -259,13 +259,13 @@ module.exports={
         console.log(getData)
         return res.send(getData)
     },
-   RejectPayment:async(req,res)=>{
-       const {id}=req.params
-       let senttosql={
-           status:'rejected'
-       }
-       let sql=`update userpayment set ${db.escape(senttosql)} where id=${db.escape(id)}`
-       const updatedata=await DbPROMselect(sql)
-   }
+    RejectPayment:async(req,res)=>{
+        const {id}=req.params
+        let senttosql={
+            status:'rejected'
+        }
+        let sql=`update userpayment set ${db.escape(senttosql)} where id=${db.escape(id)}`
+        const updatedata=await DbPROMselect(sql)
+    }
     
 }

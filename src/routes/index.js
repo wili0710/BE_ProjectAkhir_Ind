@@ -4,5 +4,6 @@ module.exports={
     TransactionRoutes:require('./TransactionRoutes'),
     AdminRoutes:require('./AdminRoutes'),
     ProductRoutes:require('./ProductRoutes'),
-    ParcelRoutes:require('./ParcelRoutes')
+    ParcelRoutes:require('./ParcelRoutes'),
+    ReportRoutes:require(`./ReportRoutes`)
 }

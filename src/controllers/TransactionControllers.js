@@ -1,9 +1,4 @@
 const {db}=require('../connections')
-const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend}=require('../helpers')
-const {createJWToken} = require('../helpers/jwt')
-const fs =require('fs')
-const handlebars=require('handlebars')
-const { parse, resolve } = require('path')
 
 const DBTransaction=()=>{
     return new Promise((resolve,reject)=>{
@@ -68,11 +63,14 @@ module.exports={
                         sql=`update transaksidetail set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksidetail[0].id)}`
                         const updatetransaksidetail=await DbPROMselect(sql)
 
-                        sql=`select sum(hargatotal) as totaltransaksi from transaksidetail
+                        sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
                         where transaksi_id=${db.escape(getdatatransaksi[0].id)} and isdeleted=0;`
                         const updatetotaltransaksi=await DbPROMselect(sql)
 
-                        senttosql={totaltransaksi:updatetotaltransaksi[0].totaltransaksi}
+                        senttosql={
+                            totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                            totalmodal:updatetotaltransaksi[0].totalmodal
+                        }
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
@@ -104,7 +102,7 @@ module.exports={
     
                         sql=`select td.qty*p.harga as totalharga, td.qty*p.hargapokok as modal from transaksidetail td
                             join products p on p.id=td.products_id
-                            where td.id=${db.escape(getdatatransaksidetail[0].id)}`
+                            where td.id=${db.escape(addproductocart.insertId)}`
                         const addhargatotal=await DbPROMselect(sql)
                         senttosql={
                             hargatotal:addhargatotal[0].totalharga,
@@ -114,11 +112,15 @@ module.exports={
                             where id=${db.escape(addproductocart.insertId)}`
                         const updatehargatotal=await DbPROMselect(sql)
     
-                        sql=`select sum(hargatotal) as totaltransaksi from transaksidetail
+                        sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
                         where transaksi_id=${db.escape(getdatatransaksi[0].id)} and isdeleted=0;`
                         const updatetotaltransaksi=await DbPROMselect(sql)
 
-                        senttosql={totaltransaksi:updatetotaltransaksi[0].totaltransaksi}
+                        senttosql={
+                            totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                            totalmodal:updatetotaltransaksi[0].totalmodal
+                        }
+
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
@@ -193,6 +195,7 @@ module.exports={
 
                             // console.log(updatehargatotal)
                         }
+                        
                         sql=`select sum(hargatotalpokok) as modalparcel from transaksidetail_has_products 
                         where transaksidetail_id=${db.escape(getdatatransaksidetail[0].id)}`
                         const getmodalparcel=await DbPROMselect(sql)
@@ -202,14 +205,16 @@ module.exports={
                         sql=`update transaksidetail set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksidetail[0].id)}`
                         const updatemodalparcel=await DbPROMselect(sql)
 
-                        sql=`select sum(hargatotal) as totaltransaksi from transaksidetail
+                        sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
                         where transaksi_id=${db.escape(getdatatransaksi[0].id)} and isdeleted=0;`
                         const updatetotaltransaksi=await DbPROMselect(sql)
 
                         senttosql={
                             totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                            totalmodal:updatetotaltransaksi[0].totalmodal,
                             lastupdate:new Date()
                         }
+
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
@@ -279,14 +284,16 @@ module.exports={
                         const updatemodalparcel=await DbPROMselect(sql)
 
                         
-                        sql=`select sum(hargatotal) as totaltransaksi from transaksidetail
+                        sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
                         where transaksi_id=${db.escape(getdatatransaksi[0].id)} and isdeleted=0;`
                         const updatetotaltransaksi=await DbPROMselect(sql)
 
                         senttosql={
                             totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                            totalmodal:updatetotaltransaksi[0].totalmodal,
                             lastupdate:new Date()
                         }
+
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
@@ -340,11 +347,15 @@ module.exports={
                     const updatehargatotal=await DbPROMselect(sql)
                     console.log(updatehargatotal)
 
-                    sql=`select sum(hargatotal) as totaltransaksi from transaksidetail
-                    where transaksi_id=${db.escape(addcart.insertId)} and isdeleted=0;`
+                    sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                        where transaksi_id=${db.escape(addcart.insertId)} and isdeleted=0;`
                     const updatetotaltransaksi=await DbPROMselect(sql)
 
-                    senttosql={totaltransaksi:updatetotaltransaksi[0].totaltransaksi}
+                    senttosql={
+                        totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                        totalmodal:updatetotaltransaksi[0].totalmodal
+                    }
+
                     sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(addcart.insertId)}`
                     const updatetransaksi=await DbPROMselect(sql)
 
@@ -395,18 +406,22 @@ module.exports={
                     }
 
                     sql=`select sum(hargatotalpokok) as modalparcel from transaksidetail_has_products 
-                    where transaksidetail_id=${db.escape(addproductocart.insertId)}`
+                    where transaksidetail_id=${db.escape(addtotransaksidetail.insertId)}`
                     const getmodalparcel=await DbPROMselect(sql)
 
                     senttosql={modal:getmodalparcel[0].modalparcel}
-                    sql=`update transaksidetail set ${db.escape(senttosql)} where id=${db.escape(addproductocart.insertId)}`
+                    sql=`update transaksidetail set ${db.escape(senttosql)} where id=${db.escape(addtotransaksidetail.insertId)}`
                     const updatemodalparcel=await DbPROMselect(sql)
 
-                    sql=`select sum(hargatotal) as totaltransaksi from transaksidetail
-                    where transaksi_id=${db.escape(addcart.insertId)} and isdeleted=0;`
+                    sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                        where transaksi_id=${db.escape(addcart.insertId)} and isdeleted=0;`
                     const updatetotaltransaksi=await DbPROMselect(sql)
 
-                    senttosql={totaltransaksi:updatetotaltransaksi[0].totaltransaksi}
+                    senttosql={
+                        totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                        totalmodal:updatetotaltransaksi[0].totalmodal
+                    }
+
                     sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(addcart.insertId)}`
                     const updatetransaksi=await DbPROMselect(sql)
                 }
@@ -482,7 +497,7 @@ module.exports={
 
     },
     RemoveFromCart:async(req,res)=>{
-        const {transaksidetail_id}=req.body
+        const {transaksi_id,transaksidetail_id}=req.body
         try {
             senttosql={
                 isdeleted:1
@@ -490,6 +505,19 @@ module.exports={
             let sql=`update transaksidetail set ${db.escape(senttosql)}
             where id=${db.escape(transaksidetail_id)}`
             const updatetransaksidetail=await DbPROMselect(sql)
+
+            sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+            where transaksi_id=${db.escape(transaksi_id)} and isdeleted=0;`
+            const updatetotaltransaksi=await DbPROMselect(sql)
+
+            senttosql={
+                totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                totalmodal:updatetotaltransaksi[0].totalmodal
+            }
+
+            sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
+            const updatetransaksi=await DbPROMselect(sql)
+
             return res.send("Success Remove From Cart")
         } catch (error) {
             return res.status(500).send({message:error.message})

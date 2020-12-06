@@ -20,7 +20,7 @@ app.get('/',(req,res)=>{
     res.send('<h1>API Project Akhir Kelompok 2 </h1>')
 })
 // const {ProductRoutes,karyawanRoutes,usersRoutes,MongoRoutes,MongooseRouters,SocketRoutes} = require('./Routes')
-const {AuthRoutes, PaymentRoutes, TransactionRoutes,AdminRoutes,ProductRoutes,ParcelRoutes } = require('./src/Routes')
+const {AuthRoutes, PaymentRoutes, TransactionRoutes,AdminRoutes,ProductRoutes,ParcelRoutes, ReportRoutes } = require('./src/Routes')
 
 app.use('/auth',AuthRoutes)
 app.use('/payment',PaymentRoutes)
@@ -29,6 +29,7 @@ app.use('/auth',AuthRoutes)
 app.use('/admin',AdminRoutes)
 app.use('/product',ProductRoutes)
 app.use('/parcel',ParcelRoutes)
+app.use(`/report`,ReportRoutes)
 
 
 // app.use('/product',ProductRoutes)
