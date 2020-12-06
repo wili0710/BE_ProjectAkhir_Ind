@@ -74,20 +74,20 @@ module.exports={
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
-                        db.commit((err)=>{
-                            if(err){
-                                return db.rollback(()=>{
-                                    res.status(500).send(err)
-                                })
-                            } 
-                        })
+                        // db.commit((err)=>{
+                        //     if(err){
+                        //         return db.rollback(()=>{
+                        //             res.status(500).send(err)
+                        //         })
+                        //     } 
+                        // })
                         // Get All Transaksi parcel dan satuan.
                         // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                        sql=`select * from transaksidetail td
-                        join transaksi t on td.transaksi_id=t.id
-                        where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                        const getcart=await DbPROMselect(sql)
-                        return res.send(getcart)
+                        // sql=`select * from transaksidetail td
+                        // join transaksi t on td.transaksi_id=t.id
+                        // where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
+                        // const getcart=await DbPROMselect(sql)
+                        // return res.send(getcart)
     
                     }else{
                         let senttosql={
@@ -124,21 +124,21 @@ module.exports={
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
-                        db.commit((err)=>{
-                            if(err){
-                                return db.rollback(()=>{
-                                    res.status(500).send(err)
-                                })
-                            } 
-                        })
+                        // db.commit((err)=>{
+                        //     if(err){
+                        //         return db.rollback(()=>{
+                        //             res.status(500).send(err)
+                        //         })
+                        //     } 
+                        // })
     
                         // Get All Transaksi parcel dan satuan.
                         // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                        sql=`select * from transaksidetail td
-                        join transaksi t on td.transaksi_id=t.id
-                        where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                        const datacart=await DbPROMselect(sql)
-                        return res.send(datacart)
+                        // sql=`select * from transaksidetail td
+                        // join transaksi t on td.transaksi_id=t.id
+                        // where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
+                        // const datacart=await DbPROMselect(sql)
+                        // return res.send(datacart)
                     }
                 }else{
                     sql=`select td.id from transaksidetail td
@@ -218,21 +218,21 @@ module.exports={
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
-                        db.commit((err)=>{
-                            if(err){
-                                return db.rollback(()=>{
-                                    res.status(500).send(err)
-                                })
-                            } 
-                        })
+                        // db.commit((err)=>{
+                        //     if(err){
+                        //         return db.rollback(()=>{
+                        //             res.status(500).send(err)
+                        //         })
+                        //     } 
+                        // })
     
                         // Get All Transaksi parcel dan satuan.
                         // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                        sql=`select * from transaksidetail td
-                        join transaksi t on td.transaksi_id=t.id
-                        where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                        const getcart=await DbPROMselect(sql)
-                        return res.send(getcart)
+                        // sql=`select * from transaksidetail td
+                        // join transaksi t on td.transaksi_id=t.id
+                        // where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
+                        // const getcart=await DbPROMselect(sql)
+                        // return res.send(getcart)
                     }else{
                         sql=`select * from parcel where id=${parcel_id}`
                         const getparcel=await DbPROMselect(sql)
@@ -297,21 +297,21 @@ module.exports={
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
-                        db.commit((err)=>{
-                            if(err){
-                                return db.rollback(()=>{
-                                    res.status(500).send(err)
-                                })
-                            } 
-                        })
+                        // db.commit((err)=>{
+                        //     if(err){
+                        //         return db.rollback(()=>{
+                        //             res.status(500).send(err)
+                        //         })
+                        //     } 
+                        // })
     
                         // Get All Transaksi parcel dan satuan.
                         // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                        sql=`select * from transaksidetail td
-                        join transaksi t on td.transaksi_id=t.id
-                        where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                        const datacart=await DbPROMselect(sql)
-                        return res.send(datacart)
+                        // sql=`select * from transaksidetail td
+                        // join transaksi t on td.transaksi_id=t.id
+                        // where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
+                        // const datacart=await DbPROMselect(sql)
+                        // return res.send(datacart)
                     }
                 }
             }else{
@@ -426,23 +426,44 @@ module.exports={
                     const updatetransaksi=await DbPROMselect(sql)
                 }
     
-                db.commit((err)=>{
-                    if(err){
-                        return db.rollback(()=>{
-                            res.status(500).send(err)
-                        })
-                    } 
-                })
-                
-
-                // Get All Transaksi parcel dan satuan.
-                // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                sql=`select * from transaksidetail td
-                join transaksi t on td.transaksi_id=t.id
-                where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                const datacart=await DbPROMselect(sql)
-                return res.send(datacart)
             }
+            db.commit((err)=>{
+                if(err){
+                    return db.rollback(()=>{
+                        res.status(500).send(err)
+                    })
+                } 
+            })
+            // Get All Transaksi parcel dan satuan.
+            // Selanjutnya get sesuai parcel atau product id yg bukan 0
+            sql=`select * from transaksi
+            where status='oncart' and users_id=${db.escape(user_id)}`
+            const gettransaksi=await DbPROMselect(sql)
+            
+            sql=`select td.transaksi_id as transaksi_id,products_id, nama, image, td.id as transaksidetail_id, harga as hargasatuan, 
+            td.hargatotal from transaksi t
+            join transaksidetail td on td.transaksi_id=t.id
+            join products p on p.id=td.products_id
+            where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.parcel_id=0;`
+            const gettransaksidetailsatuan=await DbPROMselect(sql)
+
+            sql=`select td.transaksi_id as transaksi_id,td.id as transaksidetail_id,td.parcel_id as parcel_id, 
+            td.qty as qtyparcel,td.hargatotal, 
+            pa.nama as namaparcel, pa.harga as hargaparcel, tdhp.id as productinparcel_id,
+            tdhp.products_id as products_id, p.nama as namaproduct, tdhp.qty as qtyproduct  from transaksi t
+            join transaksidetail td on td.transaksi_id=t.id
+            join transaksidetail_has_products tdhp on tdhp.transaksidetail_id=td.id
+            join products p on p.id=tdhp.products_id
+            join parcel pa on pa.id=td.parcel_id
+            where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0; `
+            const gettransaksidetailparcel=await DbPROMselect(sql)
+            
+            const getcart={
+                transaksi:gettransaksi,
+                transaksidetailsatuan:gettransaksidetailsatuan,
+                transaksidetailparcel:gettransaksidetailparcel
+            }
+            return res.send(getcart)
         } catch (error) {
             return res.status(500).send({message:error.message})
         }
@@ -450,13 +471,16 @@ module.exports={
     GetCart:async(req,res)=>{
         const {user_id}=req.query
         try {
-            sql=`select sum(hargatotal) as totaltransaksi from transaksidetail td
+            sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail td
             join transaksi t on t.id=td.transaksi_id
             where t.users_id=${user_id} and isdeleted=0 and status="oncart";`
             const updatetotaltransaksi=await DbPROMselect(sql)
             console.log(updatetotaltransaksi)
             
-            senttosql={totaltransaksi:updatetotaltransaksi[0].totaltransaksi}
+            senttosql={
+                totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                totalmodal:updatetotaltransaksi[0].totalmodal
+            }
             sql=`update transaksi set ${db.escape(senttosql)} where users_id=${user_id}`
             const updatetransaksi=await DbPROMselect(sql)
 
