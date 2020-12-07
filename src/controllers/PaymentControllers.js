@@ -5,7 +5,7 @@ const fs =require('fs')
 const handlebars=require('handlebars')
 const { transaksi } = require('./TransactionControllers')
 
-const DbPROMselect=(sql)=>{
+const DbPROMselect=(sql,imagePath=false)=>{
     return new Promise((resolve,reject)=>{
         db.query(sql,(err,results)=>{
             if(err){
@@ -38,7 +38,7 @@ module.exports={
             on td.products_id=p.id
             join users u 
             on t.users_id=u.id
-            where t.id=6;`
+            where t.id=${transaksi_id};`
         const datatransaction=await DbPROMselect(sql)
         const email=datatransaction[0].email
 
@@ -63,17 +63,38 @@ module.exports={
         return res.send(true)
     },
     UploadPaymentTransfer:async(req,res)=>{
-        const {users_id,transaksi_id,image}=req.body
-        let senttosql={
-            users_id,
-            transaksi_id,
-            image,
-            tanggaltransaksi:new Date(),
-            status:"waiting admin"
-        }
-        let sql=`insert into userpayment set ${db.escape(senttosql)}`
-        const upload=await DbPROMselect(sql)
-        return res.send(true)
+        const path='/buktipembayaran'
+        const upload=uploader(path,'BUKTI').fields([{name:'bukti'}])
+        upload(req,res,(err)=>{
+            if(err){
+                return res.status(500).json({message:'Upload Bukti Pembayaran Gagal!',error:err.message})
+            }
+            const {bukti} = req.files
+            console.log(bukti)
+            const imagePath=bukti?path+'/'+bukti[0].filename:null
+            console.log(imagePath)
+            const data = JSON.parse(req.body.data)
+
+            const {users_id,transaksi_id}=req.body
+            let senttosql={
+                users_id,
+                transaksi_id,
+                image:imagePath,
+                tanggaltransaksi:new Date(),
+                status:"waiting admin"
+            }
+            let sql=`insert into userpayment set ${db.escape(senttosql)}`
+            db.query(sql,(err)=>{
+                if(err){
+                    if(imagePath){
+                        fs.unlinkSync('./public'+imagePath)
+                    }
+                    return res.status(500).send(err)
+                }
+            })
+            return res.send(true)
+        })
+
     },
     // GetPaymentInWaiting untuk get data payment yang status waiting admin
     GetPaymentInWaiting:async(req,res)=>{
@@ -162,6 +183,13 @@ module.exports={
         console.log(getData)
         return res.send(getData)
     },
-   
+   RejectPayment:async(req,res)=>{
+       const {id}=req.params
+       let senttosql={
+           status:'rejected'
+       }
+       let sql=`update userpayment set ${db.escape(senttosql)} where id=${db.escape(id)}`
+       const updatedata=await DbPROMselect(sql)
+   }
     
 }
