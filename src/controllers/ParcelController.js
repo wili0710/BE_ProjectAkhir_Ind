@@ -99,5 +99,9 @@ module.exports={
         } catch(error) {
             return response.status(500).send({message: error.message}+ "d");
         };
+    },
+    initnewParcel:(request,response) => {
+        const {name, price, category, gambar, item} = request.body;
+        console.log(name,price,category,gambar,item);
     }
 };
