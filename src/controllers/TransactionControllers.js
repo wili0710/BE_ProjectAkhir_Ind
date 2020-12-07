@@ -27,7 +27,7 @@ module.exports={
     AddToCart:async(req,res)=>{
         console.log("jalan")
         console.log(req.body)
-        const {user_id,products_id,parcel_id,qty,productforparcel_id,qtyproductforparcel,transaksidetail_id}=req.body
+        const {user_id,products_id,parcel_id,qty,productforparcel_id,qtyproductforparcel,transaksidetail_id,message}=req.body
         let sql= `select * from transaksi where status='oncart' and users_id=${db.escape(user_id)}`
         try {
             await DBTransaction()
@@ -155,6 +155,7 @@ module.exports={
                         senttosql={
                             qty:parseInt(qty),
                             hargatotal:getparcel[0].harga*qty,
+                            message:message,
                             lastupdate:new Date()
                         }
                         sql=`update transaksidetail set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksidetail[0].id)}`
@@ -242,7 +243,8 @@ module.exports={
                             qty:qty,
                             transaksi_id:getdatatransaksi[0].id,
                             lastupdate:new Date(),
-                            hargatotal:getparcel[0].harga*qty
+                            hargatotal:getparcel[0].harga*qty,
+                            message:message
                         }
                         sql=`insert into transaksidetail set ${db.escape(senttosql)}`
                         const addproductocart=await DbPROMselect(sql)
@@ -370,7 +372,8 @@ module.exports={
                         parcel_id:parcel_id,
                         qty:qty,
                         lastupdate:new Date(),
-                        hargatotal:getparcel[0].harga*qty
+                        hargatotal:getparcel[0].harga*qty,
+                        message:message
                     }
                     sql=`insert into transaksidetail set ${db.escape(senttosql)}`
                     const addtotransaksidetail=await DbPROMselect(sql)
@@ -497,6 +500,13 @@ module.exports={
             where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.parcel_id=0;`
             const gettransaksidetailsatuan=await DbPROMselect(sql)
 
+            sql=`select td.transaksi_id as transaksi_id,products_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
+            td.hargatotal from transaksi t
+            join transaksidetail td on td.transaksi_id=t.id
+            join parcel p on p.id=td.parcel_id
+            where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0;`
+            const gettransaksiparcel=await DbPROMselect(sql)
+
             sql=`select td.transaksi_id as transaksi_id,td.id as transaksidetail_id,td.parcel_id as parcel_id, 
             td.qty as qtyparcel,td.hargatotal, 
             pa.nama as namaparcel, pa.harga as hargaparcel, tdhp.id as productinparcel_id,
@@ -511,6 +521,7 @@ module.exports={
             const getcart={
                 transaksi:gettransaksi,
                 transaksidetailsatuan:gettransaksidetailsatuan,
+                transaksiparcel:gettransaksiparcel,
                 transaksidetailparcel:gettransaksidetailparcel
             }
             return res.send(getcart)

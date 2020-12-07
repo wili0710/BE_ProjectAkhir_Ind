@@ -1,5 +1,12 @@
 const {db}=require('../connections')
 
+// Tambahan utk Report Controller
+
+// query ambil income perhari
+// query ambil income perbulan
+// query ambil income perminggu
+
+
 const DBTransaction=()=>{
     return new Promise((resolve,reject)=>{
         db.beginTransaction((err)=>{
@@ -65,14 +72,14 @@ module.exports={
 
             const senttofe={
                 PotensiPenjualan:PotensiPenjualan[0].PotensiPenjualan,
-                Penjualan:Penjualan,
-                Pendapatan:Pendapatan,
-                Penjualan_Satuan:Penjualan_Satuan,
-                Pendapatan_Satuan:Pendapatan_Satuan,
-                Penjualan_Parcel:Penjualan_Parcel,
-                Pendapatan_Parcel:Pendapatan_Parcel
+                Penjualan:Penjualan[0].Penjualan,
+                Pendapatan:Pendapatan[0].Pendapatan,
+                Penjualan_Satuan:Penjualan_Satuan[0].Penjualan_Satuan,
+                Pendapatan_Satuan:Pendapatan_Satuan[0].Pendapatan_Satuan,
+                Penjualan_Parcel:Penjualan_Parcel[0].Penjualan_Parcel,
+                Pendapatan_Parcel:Pendapatan_Parcel[0].Pendapatan_Parcel
             }
-
+            console.log("kirim report income")
             res.send(senttofe)
         } catch (error) {
             return res.status(500).send({message:error.message})
@@ -109,8 +116,6 @@ module.exports={
         }
     }
 }
-
-
 
 
 
