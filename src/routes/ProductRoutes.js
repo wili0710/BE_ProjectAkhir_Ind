@@ -8,4 +8,4 @@ Router.get('/getallcatprod',ProductControllers.getCategoryProd)
 Router.get('/getallcatparcel',ProductControllers.getCategoryParcel)
 Router.post('/addCatParcel',ProductControllers.addCategoryParcel)
 Router.post('/addCatProd',ProductControllers.addCategoryProduct)
-module.exports=Router
+module.exports=Router;
