@@ -22,6 +22,7 @@ const DbPROMselect=(sql)=>{
         })
     })
 }
+
 module.exports={
     // AddToCart tidak menambah QTY tetapi mengupdate QTY
     AddToCart:async(req,res)=>{
@@ -34,8 +35,6 @@ module.exports={
     
             if (getdatatransaksi.length){
                 if(parcel_id==0){
-
-
                     sql=`select * from transaksidetail where products_id=${db.escape(products_id)} 
                         and transaksi_id=${db.escape(getdatatransaksi[0].id)} and parcel_id=${db.escape(parcel_id)} and isdeleted=0`
                     const getdatatransaksidetail=await DbPROMselect(sql)
