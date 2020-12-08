@@ -228,12 +228,22 @@ module.exports={
     },
     getDataParcelById:(req,res)=>{
         let {id}=req.params
-        let sql=`select * from parcel p 
-        join parcel_has_categoryproduct ph
-        on p.id=ph.parcel_id
-        join categoryproduct cp
-        on cp.id = ph.categoryproduct_id
-        where p.id = ${db.escape(id)}`
+        let sql=`select p.gambar as gambar,
+        p.id as id,
+        p.categoryparcel_id as categoryparcel_id,
+        p.harga as harga,
+        p.nama as namaParcel,
+        ph.parcel_id as parcel_id,
+        ph.categoryproduct_id as categoryproduct_id,
+        ph.qty as qty,
+        cp.nama as namaProduct,
+        p.isdeleted as isdeleted
+         from parcel p 
+                join parcel_has_categoryproduct ph
+                on p.id=ph.parcel_id
+                join categoryproduct cp
+                on cp.id = ph.categoryproduct_id
+                where p.id = ${db.escape(id)} and p.isdeleted=0;`
         db.query(sql,(err,result)=>{
             if(err)return res.status(500).send(err)
             return res.send(result)
