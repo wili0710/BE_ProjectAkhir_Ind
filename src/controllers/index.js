@@ -6,5 +6,6 @@ module.exports={
     TransactionControllers:require('./TransactionControllers'),
     AdminControllers:require('./AdminControllers'),
     ProductControllers:require('./ProductControllers'),
-    ParcelController:require('./ParcelController')
+    ParcelController:require('./ParcelController'),
+    ReportController:require(`./ReportController`)
 }

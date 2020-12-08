@@ -158,6 +158,7 @@ module.exports={
             alamat,
             nomortelfon
         }
+
         let sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
         const userupdate=await DbPROMselect(sql)
         sql=`select id,nama,email,role,alamat,nomortelfon from users where email=${db.escape(email)}`
@@ -166,5 +167,62 @@ module.exports={
         getUser[0].token=token
         
         return res.send(getUser[0])
+    },
+
+    changeAdmin:(req,res)=>{
+        let {id}= req.body
+        let sql=`update users set ? where id = ${db.escape(id)}`
+        let dataupdate = {
+            role:'admin'
+        }
+        db.query(sql,dataupdate,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from users`
+            db.query(sql,(err,datauser)=>{
+                if(err)return res.status(500).send(err)
+                return res.send(datauser)
+            })
+        })
+    },
+
+    changeUser:(req,res)=>{
+        let{id}=req.body
+        let sql=`update users set ? where id = ${db.escape(id)}`
+        let dataupdate= {
+            role:'user'
+        }
+        db.query(sql,dataupdate,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from users`
+            db.query(sql,(err,datauser)=>{
+                if(err) return res.status(500).send(err)
+                return res.send(datauser)
+            })
+
+        })
+    },
+    deleteUser:(req,res)=>{
+        let {id}=req.body
+        let sql=`delete from users where id =${id}`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from users`
+            db.query(sql,(err,datauser)=>{
+                if(err) return res.status(500).send(err)
+                return res.send(datauser)
+            })
+        })
     }
+    // deleteProduct:(req,res)=>{
+    //     let {id} = req.body
+    //     let sql =`delete from products where id=${id} `
+    //     db.query(sql,(err,result)=>{
+    //         if(err) return res.status(500).send(err)
+    //         sql=`select * from products` 
+    //         db.query(sql,(err,dataproduct)=>{
+    //             if(err) return res.status(500).send(err)
+    //             return res.status(200).sed(dataproduct)
+    //         })
+    //     })
+    // },
 }

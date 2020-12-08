@@ -56,7 +56,7 @@ module.exports={
     },
     
     getAllProduct:(req,res)=>{
-        let sql=`select * from Products`
+        let sql=`select * from Products where isdeleted=0`
         db.query(sql,(err,product)=>{
             if(err) return res.status(500).send({message:err})
             return res.send(product)
@@ -106,19 +106,172 @@ module.exports={
     },
 
     getCategoryProd:(req,res)=>{
-        let sql = `select * from categoryproduct`
+        let sql = `select * from categoryproduct where isdeleted=0`
         db.query(sql,(err,result)=>{
             if(err) return res.status(500).send(err)
             return res.send(result)
         })
     },
     getCategoryParcel:(req,res)=>{
-        let sql = `select * from categoryparcel`
+        let sql = `select * from categoryparcel where isdeleted=0`
         db.query(sql,(err,result)=>{
             if(err) return res.status(500).send(err)
             return res.send(result)
         })
     },
+
+    deleteProduct:(req,res)=>{
+        let {id} = req.body
+        let sql =`delete from products where id=${id} `
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from products where isdeleted=0` 
+            db.query(sql,(err,dataproduct)=>{
+                if(err) return res.status(500).send(err)
+                return res.status(200).sed(dataproduct)
+            })
+        })
+    },
+
+    deleteCatproduct:(req,res)=>{
+        let {id}= req.body
+        let sql=`delete from categoryproduct where id=${id}`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from categoryproduct`
+            db.query(sql,(err,datacat)=>{
+                if(err) return res.status(500).send(err)
+                return res.status(200).send(datacat)
+            })
+        })
+    },
+
+    deleteCatParcel:(req,res)=>{
+        let {id}= req.body
+        let sql=`delete from categoryparcel where id=${id}`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from categoryparcel`
+            db.query(sql,(err,datapar)=>{
+                if(err) return res.status(500).send(err)
+                return res.status(200).send(datapar)
+            })
+        })
+    },
+    deleteProd:(req,res)=>{
+        let {id} = req.body
+        let dataupdate={
+            isdeleted:1
+        }
+        let sql=`update products set ? where id = ${id}`
+        
+        db.query(sql,dataupdate,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from products where isdeleted=0`
+            db.query(sql,(err,dataproduct)=>{
+                if(err) return res.status(500).send(err)
+                return res.send(dataproduct)
+            })
+        })
+    },
+    deleteCatProd:(req,res)=>{
+        let {id}= req.body
+        let dataupdate={
+            isdeleted:1
+        }
+        let sql=`update categoryproduct set ? where id =${id}`
+
+        db.query(sql,dataupdate,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from categoryproduct where isdeleted=0`
+            db.query(sql,(err,datacatprod)=>{
+                if(err) return res.status(500).send(err)
+                return res.send(datacatprod)
+            })
+        })
+    },
+
+    deleteCatParcel:(req,res)=>{
+        let{id}=req.body
+        let dataupdate={
+            isdeleted:1
+        }
+        let sql=`update categoryparcel set ? where id=${id}`
+        db.query(sql,dataupdate,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            sql=`select * from categoryparcel where isdeleted=0`
+            db.query(sql,(err,datacatpar)=>{
+                if(err) return res.status(500).send(err)
+                return res.send(datacatpar)
+            })
+        })
+    },
+
+    getDataParcel:(req,res)=>{
+        let sql=`select * from parcel 
+        where isdeleted = 0;`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
+    getDataParcelByAll:(req,res)=>{
+        let sql= `select * from parcel p 
+        join parcel_has_categoryproduct ph
+        on p.id=ph.parcel_id
+        join categoryproduct cp
+        on cp.id = ph.categoryproduct_id`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
+    getDataParcelById:(req,res)=>{
+        let {id}=req.params
+        let sql=`select * from parcel p 
+        join parcel_has_categoryproduct ph
+        on p.id=ph.parcel_id
+        join categoryproduct cp
+        on cp.id = ph.categoryproduct_id
+        where p.id = ${db.escape(id)}`
+        db.query(sql,(err,result)=>{
+            if(err)return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
+
+    getDataProductMinuman:(req,res)=>{
+        let sql=`select * from products where categoryproduct_id =1 and isdeleted=0`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
+    getDataProductMakanan:(req,res)=>{
+        let sql=`select * from products where categoryproduct_id=2 and isdeleted=0`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
+    getDataProductChocolate:(req,res)=>{
+        let sql=`select * from products where categoryproduct_id=3 and isdeleted=0`
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    }
+    
+
+
+
+ 
+
+
+    
+
+
+
 
     
     

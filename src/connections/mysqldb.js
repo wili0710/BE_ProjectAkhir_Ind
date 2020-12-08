@@ -9,6 +9,7 @@ const db=mysql.createConnection({
 
 db.connect((err)=>{
     if(err){
+        console.log(err)
         console.log('error database cok')
     }else {
         console.log('success  connect dengan db')
