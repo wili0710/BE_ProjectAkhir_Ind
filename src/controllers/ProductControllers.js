@@ -270,6 +270,15 @@ module.exports={
             if(err) return res.status(500).send(err)
             return res.send(result)
         })
+    },
+    getDataProductById:(req,res)=>{
+        let {id} = req.body
+        let sql=`select * from products where id = ${db.escape(id)};`
+
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
     }
     
 
