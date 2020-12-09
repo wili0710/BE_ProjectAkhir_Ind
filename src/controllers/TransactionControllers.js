@@ -26,7 +26,7 @@ const DbPROMselect=(sql)=>{
 module.exports={
     // AddToCart tidak menambah QTY tetapi mengupdate QTY
     AddToCart:async(req,res)=>{
-
+        console.log(req.body)
         const {user_id,products_id,parcel_id,qty,productforparcel_id,qtyproductforparcel,transaksidetail_id,message}=req.body
         let sql= `select * from transaksi where status='oncart' and users_id=${db.escape(user_id)}`
         try {
@@ -142,7 +142,7 @@ module.exports={
                     sql=`select td.id from transaksidetail td
                         join transaksidetail_has_products tdhp
                         on tdhp.transaksidetail_id=td.id
-                        where tdhp.products_id in ("${db.escape(productforparcel_id)}") and td.id=${db.escape(transaksidetail_id)}
+                        where td.id=${db.escape(transaksidetail_id)}
                         and td.transaksi_id=${db.escape(getdatatransaksi[0].id)} and td.parcel_id=${db.escape(parcel_id)} and td.isdeleted=0`
                     const getdatatransaksidetail=await DbPROMselect(sql)
 
@@ -434,7 +434,7 @@ module.exports={
             where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.parcel_id=0;`
             const gettransaksidetailsatuan=await DbPROMselect(sql)
 
-            sql=`select td.transaksi_id as transaksi_id,products_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
+            sql=`select td.transaksi_id as transaksi_id,td.parcel_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
             td.hargatotal, td.qty, td.message from transaksi t
             join transaksidetail td on td.transaksi_id=t.id
             join parcel p on p.id=td.parcel_id
@@ -444,11 +444,12 @@ module.exports={
             sql=`select td.transaksi_id as transaksi_id,td.id as transaksidetail_id,td.parcel_id as parcel_id, 
             td.qty as qtyparcel,td.hargatotal, 
             pa.nama as namaparcel, pa.harga as hargaparcel, tdhp.id as productinparcel_id,
-            tdhp.products_id as products_id, p.nama as namaproduct, tdhp.qty as qtyproduct  from transaksi t
+            tdhp.products_id as products_id, p.nama as namaproduct, tdhp.qty as qtyproduct, p.categoryproduct_id, cp.nama as category  from transaksi t
             join transaksidetail td on td.transaksi_id=t.id
             join transaksidetail_has_products tdhp on tdhp.transaksidetail_id=td.id
             join products p on p.id=tdhp.products_id
             join parcel pa on pa.id=td.parcel_id
+            join categoryproduct cp on cp.id=p.categoryproduct_id
             where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0; `
             const gettransaksidetailparcel=await DbPROMselect(sql)
             
@@ -460,6 +461,7 @@ module.exports={
             }
             return res.send(getcart)
         } catch (error) {
+            console.log(error)
             return res.status(500).send({message:error.message})
         }
     },
@@ -491,7 +493,7 @@ module.exports={
             where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.parcel_id=0;`
             const gettransaksidetailsatuan=await DbPROMselect(sql)
 
-            sql=`select td.transaksi_id as transaksi_id,products_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
+            sql=`select td.transaksi_id as transaksi_id,td.parcel_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
             td.hargatotal, td.qty, td.message from transaksi t
             join transaksidetail td on td.transaksi_id=t.id
             join parcel p on p.id=td.parcel_id
@@ -501,12 +503,13 @@ module.exports={
             sql=`select td.transaksi_id as transaksi_id,td.id as transaksidetail_id,td.parcel_id as parcel_id, 
             td.qty as qtyparcel,td.hargatotal, 
             pa.nama as namaparcel, pa.harga as hargaparcel, tdhp.id as productinparcel_id,
-            tdhp.products_id as products_id, p.nama as namaproduct, tdhp.qty as qtyproduct  from transaksi t
+            tdhp.products_id as products_id, p.nama as namaproduct, tdhp.qty as qtyproduct, p.categoryproduct_id, cp.nama as category  from transaksi t
             join transaksidetail td on td.transaksi_id=t.id
             join transaksidetail_has_products tdhp on tdhp.transaksidetail_id=td.id
             join products p on p.id=tdhp.products_id
             join parcel pa on pa.id=td.parcel_id
-            where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0; `
+            join categoryproduct cp on cp.id=p.categoryproduct_id
+            where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0;  `
             const gettransaksidetailparcel=await DbPROMselect(sql)
             
             const getcart={
@@ -558,7 +561,7 @@ module.exports={
             where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.parcel_id=0;`
             const gettransaksidetailsatuan=await DbPROMselect(sql)
             
-            sql=`select td.transaksi_id as transaksi_id,products_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
+            sql=`select td.transaksi_id as transaksi_id,td.parcel_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
             td.hargatotal, td.qty, td.message from transaksi t
             join transaksidetail td on td.transaksi_id=t.id
             join parcel p on p.id=td.parcel_id
@@ -568,11 +571,12 @@ module.exports={
             sql=`select td.transaksi_id as transaksi_id,td.id as transaksidetail_id,td.parcel_id as parcel_id, 
             td.qty as qtyparcel,td.hargatotal, 
             pa.nama as namaparcel, pa.harga as hargaparcel, tdhp.id as productinparcel_id,
-            tdhp.products_id as products_id, p.nama as namaproduct, tdhp.qty as qtyproduct  from transaksi t
+            tdhp.products_id as products_id, p.nama as namaproduct, tdhp.qty as qtyproduct, p.categoryproduct_id, cp.nama as category  from transaksi t
             join transaksidetail td on td.transaksi_id=t.id
             join transaksidetail_has_products tdhp on tdhp.transaksidetail_id=td.id
             join products p on p.id=tdhp.products_id
             join parcel pa on pa.id=td.parcel_id
+            join categoryproduct cp on cp.id=p.categoryproduct_id
             where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0; `
             const gettransaksidetailparcel=await DbPROMselect(sql)
             
