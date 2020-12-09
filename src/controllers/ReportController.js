@@ -90,9 +90,13 @@ module.exports={
             //-- Item Product Favorit Terjual ( Satuan )
             let sql=`select sum(qty) as qty,products_id,p.nama,p.image from (
                 select qty,products_id from transaksidetail td
-                where td.parcel_id=0 and isdeleted=0
+                join transaksi t on t.id=td.transaksi_id
+                where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")
                 union all
-                select qty,products_id from transaksidetail_has_products tdhp) ini
+                select qty,products_id from transaksidetail_has_products tdhp
+                join transaksidetail td on td.id=tdhp.transaksidetail_id
+                join transaksi t on t.id=td.transaksi_id
+                where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")) ini
                 join products p on p.id=ini.products_id
                 group by products_id
                 order by qty DESC;`
@@ -101,7 +105,8 @@ module.exports={
             // -- Parcel Paket Favorit
             sql=`select sum(qty) as qty, p.nama,p.gambar from transaksidetail td
             join parcel p on p.id=td.parcel_id
-            where td.products_id=0
+            join transaksi t on t.id=td.transaksi_id
+            where td.products_id=0 and td.isdeleted=0 and t.status in ("onsent","completed")
             group by parcel_id 
             order by qty desc;`
             const ParcelFavorit=await DbPROMselect(sql)
