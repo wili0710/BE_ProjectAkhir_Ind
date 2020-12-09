@@ -285,7 +285,15 @@ module.exports={
         })
     },
 
+    getDataProductById:(req,res)=>{
+        let {id} = req.body
+        let sql=`select * from products where id = ${db.escape(id)};`
 
+        db.query(sql,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
     // Wili tambah, utk di cart edit.
     getAllProductByCategory:async(req,res)=>{
         const {categoryproduct_id}=req.body
