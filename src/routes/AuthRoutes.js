@@ -9,5 +9,5 @@ Router.post('/newlogin',AuthControllers.newLogin)
 Router.post(`/changeadmin`,AuthControllers.changeAdmin)
 Router.post('/changeuser',AuthControllers.changeUser)
 Router.delete('/deleteuser',AuthControllers.deleteUser)
-
+Router.post('/newkeeplogin',AuthControllers.newKeepLogin)
 module.exports=Router
