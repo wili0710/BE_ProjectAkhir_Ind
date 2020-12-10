@@ -24,6 +24,184 @@ const DbPROMselect=(sql)=>{
 }
 
 module.exports={
+    // add to cart untuk nambah qty per product
+    AddToCartProduct:async(req,res)=>{
+        const {user_id,products_id,parcel_id,qty,productforparcel_id,qtyproductforparcel,transaksidetail_id,message}=req.body
+        let sql= `select * from transaksi where status='oncart' and users_id=${db.escape(user_id)}`
+        try {
+            await DBTransaction()
+            const getdatatransaksi=await DbPROMselect(sql)
+    
+            if (getdatatransaksi.length){
+                if(parcel_id==0){
+                    sql=`select * from transaksidetail where products_id=${db.escape(products_id)} 
+                        and transaksi_id=${db.escape(getdatatransaksi[0].id)} and parcel_id=${db.escape(parcel_id)} and isdeleted=0`
+                    const getdatatransaksidetail=await DbPROMselect(sql)
+
+                    if(getdatatransaksidetail.length){
+                        let senttosql={
+                            qty:parseInt(qty) + getdatatransaksidetail[0].qty,
+                            lastupdate:new Date()
+                        }
+                        sql=`update transaksidetail set ${db.escape(senttosql)} 
+                        where products_id=${db.escape(getdatatransaksidetail[0].products_id)}
+                        and transaksi_id=${db.escape(getdatatransaksidetail[0].transaksi_id)}`
+                        const updatedata=await DbPROMselect(sql)
+    
+                        sql=`select td.qty*p.harga as totalharga, td.qty*p.hargapokok as modal from transaksidetail td
+                            join products p on p.id=td.products_id
+                            where td.id=${db.escape(getdatatransaksidetail[0].id)}`
+                        const addhargatotal=await DbPROMselect(sql)
+                        
+                        senttosql={
+                            hargatotal:addhargatotal[0].totalharga,
+                            modal:addhargatotal[0].modal
+                        }
+                        sql=`update transaksidetail set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksidetail[0].id)}`
+                        const updatetransaksidetail=await DbPROMselect(sql)
+
+                        sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                        where transaksi_id=${db.escape(getdatatransaksi[0].id)} and isdeleted=0;`
+                        const updatetotaltransaksi=await DbPROMselect(sql)
+
+                        senttosql={
+                            totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                            totalmodal:updatetotaltransaksi[0].totalmodal
+                        }
+                        sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
+                        const updatetransaksi=await DbPROMselect(sql)
+
+                    }else {
+                        let senttosql={
+                            products_id:products_id,
+                            transaksi_id:getdatatransaksi[0].id,
+                            parcel_id:parcel_id,
+                            qty:qty,
+                            lastupdate:new Date()
+                        }
+                        sql=`insert into transaksidetail set ${db.escape(senttosql)}`
+                        const addproductocart=await DbPROMselect(sql)
+    
+                        sql=`select td.qty*p.harga as totalharga, td.qty*p.hargapokok as modal from transaksidetail td
+                            join products p on p.id=td.products_id
+                            where td.id=${db.escape(addproductocart.insertId)}`
+                        const addhargatotal=await DbPROMselect(sql)
+                        senttosql={
+                            hargatotal:addhargatotal[0].totalharga,
+                            modal:addhargatotal[0].modal
+                        }
+                        sql=`update transaksidetail set ${db.escape(senttosql)}
+                            where id=${db.escape(addproductocart.insertId)}`
+                        const updatehargatotal=await DbPROMselect(sql)
+    
+                        sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                        where transaksi_id=${db.escape(getdatatransaksi[0].id)} and isdeleted=0;`
+                        const updatetotaltransaksi=await DbPROMselect(sql)
+
+                        senttosql={
+                            totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                            totalmodal:updatetotaltransaksi[0].totalmodal
+                        }
+
+                        sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
+                        const updatetransaksi=await DbPROMselect(sql)
+                        }            
+                    }
+                }else {
+                    let senttosql={
+                        lastupdate:new Date(),
+                        status:'oncart',
+                        users_id:user_id
+                    }
+                    sql=`insert into transaksi set ${db.escape(senttosql)}`
+                    const addcart=await DbPROMselect(sql)
+                        senttosql={
+                            products_id:products_id,
+                            transaksi_id:addcart.insertId,
+                            parcel_id:parcel_id,
+                            qty:qty,
+                            lastupdate:new Date()
+                        }
+                        sql=`insert into transaksidetail set ${db.escape(senttosql)}`
+                        const addtotransaksidetail=await DbPROMselect(sql)
+                        sql=`select td.qty*p.harga as totalharga, td.qty*p.hargapokok as modal from transaksidetail td
+                            join products p on p.id=td.products_id
+                            where td.id=${db.escape(addtotransaksidetail.insertId)}`
+                        const addhargatotal=await DbPROMselect(sql)
+                        senttosql={
+                            hargatotal:addhargatotal[0].totalharga,
+                            modal:addhargatotal[0].modal
+                        }
+                        sql=`update transaksidetail set ${db.escape(senttosql)}
+                            where id=${db.escape(addtotransaksidetail.insertId)}`
+                        const updatehargatotal=await DbPROMselect(sql)
+    
+                        sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                            where transaksi_id=${db.escape(addcart.insertId)} and isdeleted=0;`
+                        const updatetotaltransaksi=await DbPROMselect(sql)
+    
+                        senttosql={
+                            totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                            totalmodal:updatetotaltransaksi[0].totalmodal
+                        }
+    
+                        sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(addcart.insertId)}`
+                        const updatetransaksi=await DbPROMselect(sql)
+                
+                    }
+                    db.commit((err)=>{
+                        if(err){
+                            return db.rollback(()=>{
+                                res.status(500).send(err)
+                            })
+                        } 
+                    })
+                    // Get All Transaksi parcel dan satuan.
+                    // Selanjutnya get sesuai parcel atau product id yg bukan 0
+                    sql=`select * from transaksi
+                    where status='oncart' and users_id=${db.escape(user_id)}`
+                    const gettransaksi=await DbPROMselect(sql)
+                    
+                    sql=`select td.transaksi_id as transaksi_id,products_id, nama, image, td.id as transaksidetail_id, harga as hargasatuan, 
+                    td.hargatotal, td.qty from transaksi t
+                    join transaksidetail td on td.transaksi_id=t.id
+                    join products p on p.id=td.products_id
+                    where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.parcel_id=0;`
+                    const gettransaksidetailsatuan=await DbPROMselect(sql)
+        
+                    sql=`select td.transaksi_id as transaksi_id,td.parcel_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
+                    td.hargatotal, td.qty, td.message from transaksi t
+                    join transaksidetail td on td.transaksi_id=t.id
+                    join parcel p on p.id=td.parcel_id
+                    where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0;`
+                    const gettransaksiparcel=await DbPROMselect(sql)
+        
+                    sql=`select td.transaksi_id as transaksi_id,td.id as transaksidetail_id,td.parcel_id as parcel_id, 
+                    td.qty as qtyparcel,td.hargatotal, 
+                    pa.nama as namaparcel, pa.harga as hargaparcel, tdhp.id as productinparcel_id,
+                    tdhp.products_id as products_id, p.nama as namaproduct, tdhp.qty as qtyproduct, p.categoryproduct_id, cp.nama as category  from transaksi t
+                    join transaksidetail td on td.transaksi_id=t.id
+                    join transaksidetail_has_products tdhp on tdhp.transaksidetail_id=td.id
+                    join products p on p.id=tdhp.products_id
+                    join parcel pa on pa.id=td.parcel_id
+                    join categoryproduct cp on cp.id=p.categoryproduct_id
+                    where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0; `
+                    const gettransaksidetailparcel=await DbPROMselect(sql)
+                    
+                    const getcart={
+                        transaksi:gettransaksi,
+                        transaksidetailsatuan:gettransaksidetailsatuan,
+                        transaksiparcel:gettransaksiparcel,
+                        transaksidetailparcel:gettransaksidetailparcel
+                    }
+                    return res.send(getcart)
+
+        }catch(error){
+            console.log(error)
+        }
+    },
+
+
     // AddToCart tidak menambah QTY tetapi mengupdate QTY
     AddToCart:async(req,res)=>{
         console.log(req.body)
@@ -34,7 +212,7 @@ module.exports={
             const getdatatransaksi=await DbPROMselect(sql)
     
             if (getdatatransaksi.length){
-                if(parcel_id==0){
+                if(parcel_id==0){ // untuk bukan parcel beli product satuan
                     sql=`select * from transaksidetail where products_id=${db.escape(products_id)} 
                         and transaksi_id=${db.escape(getdatatransaksi[0].id)} and parcel_id=${db.escape(parcel_id)} and isdeleted=0`
                     const getdatatransaksidetail=await DbPROMselect(sql)
