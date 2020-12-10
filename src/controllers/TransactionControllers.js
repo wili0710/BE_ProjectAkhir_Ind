@@ -466,6 +466,7 @@ module.exports={
         }
     },
     GetCart:async(req,res)=>{
+        console.log(req.query)
         const {user_id}=req.query
         try {
             sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail td
