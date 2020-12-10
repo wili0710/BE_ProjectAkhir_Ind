@@ -28,6 +28,7 @@
     "mysqlw": "^0.13.6",
     "node-schedule": "^1.3.2",
     "nodemailer": "^6.4.13",
+    "numeral": "^2.0.6",
     "sequelize": "^6.3.5",
     "socket-io": "^1.0.0",
     "socket.io": "^2.3.0"

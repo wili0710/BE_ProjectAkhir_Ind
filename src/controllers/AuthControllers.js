@@ -26,17 +26,22 @@ module.exports={
 
 
              // check total transaksi
-             sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail td
-             join transaksi t on t.id=td.transaksi_id
-             where t.users_id=${db.escape(getUser[0].id)} and isdeleted=0 and status="oncart";`
-             const updatetotaltransaksi=await DbPROMselect(sql)
-              
-             senttosql={
-                 totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
-                 totalmodal:updatetotaltransaksi[0].totalmodal
-             }
-             sql=`update transaksi set ${db.escape(senttosql)} where users_id=${db.escape(getUser[0].id)}`
-             const updatetransaksi=await DbPROMselect(sql)
+            sql=`select * from transaksi where users_id=${getUser[0].id} and status="oncart"`
+            const isOncart=await DbPROMselect(sql)
+            if(isOncart.length){
+                sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                where transaksi_id=${db.escape(isOncart[0].id)} and isdeleted=0;`
+                const updatetotaltransaksi=await DbPROMselect(sql)
+                console.log(updatetotaltransaksi[0].transaksi_id)
+                senttosql={
+                    totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                    totalmodal:updatetotaltransaksi[0].totalmodal
+                }
+                sql=`update transaksi set ${db.escape(senttosql)} where id=${isOncart[0].id}`
+                const updatetransaksi=await DbPROMselect(sql)
+                console.log(updatetransaksi)
+
+            }
  
              // Get All Transaksi parcel dan satuan.
              // Selanjutnya get sesuai parcel atau product id yg bukan 0
@@ -104,18 +109,23 @@ module.exports={
             const getUser = await DbPROMselect(sql)
             console.log(getUser[0].id)
             
-                // check total transaksi
-                sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail td
-            join transaksi t on t.id=td.transaksi_id
-            where t.users_id=${db.escape(getUser[0].id)} and isdeleted=0 and status="oncart";`
-            const updatetotaltransaksi=await DbPROMselect(sql)
-             
-            senttosql={
-                totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
-                totalmodal:updatetotaltransaksi[0].totalmodal
+            // check total transaksi
+
+            sql=`select * from transaksi where users_id=${getUser[0].id} and status="oncart"`
+            const isOncart=await DbPROMselect(sql)
+            if(isOncart.length){
+                sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                where transaksi_id=${db.escape(isOncart[0].id)} and isdeleted=0;`
+                const updatetotaltransaksi=await DbPROMselect(sql)
+                console.log(updatetotaltransaksi[0].transaksi_id)
+                senttosql={
+                    totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                    totalmodal:updatetotaltransaksi[0].totalmodal
+                }
+                sql=`update transaksi set ${db.escape(senttosql)} where id=${isOncart[0].id}`
+                const updatetransaksi=await DbPROMselect(sql)
+                console.log(updatetransaksi)
             }
-            sql=`update transaksi set ${db.escape(senttosql)} where users_id=${db.escape(getUser[0].id)}`
-            const updatetransaksi=await DbPROMselect(sql)
 
             // Get All Transaksi parcel dan satuan.
             // Selanjutnya get sesuai parcel atau product id yg bukan 0

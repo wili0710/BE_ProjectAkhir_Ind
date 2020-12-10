@@ -55,39 +55,37 @@
                     Terima Kasih !
                 </div>
                 <div class="subbox2-2">
-                    <div class="text">
-                        Pembayaran untuk transaksi id {{transaksi_id}} sudah lunas.
-                        Barang yang dibeli :
+                    <div style="border-bottom:5px solid #f3f4f5;
+                    padding-top:10px;
+                    padding-bottom:10px;
+                    ">
+                        Pembayaran telah kami terima dan pesanan akan kami proses secepatnya
                     </div>
-                    <!-- <div class="text">
-                        Untuk menyelesaikan pendaftaran, silakan masukan otp 
+                    <div style="
+                        border-bottom:5px solid #f3f4f5;
+                        padding-top:10px;
+                        padding-bottom:10px;
+                    ">
+                        <div>
+                            Transaksi Id : {{transaksi_id}}                        
+                        </div>
+                        <div>
+                            Total Transaksi : Rp {{totaltransaksi}}
+                        </div>
+                        <div>
+                            Telah Dibayar
+                        </div>
                     </div>
-                    <div class="text">
-                        dibawah ini ke halaman registrasi website kami <a href="{{link}}">di sini</a>.
-                    </div> -->
-                    <div class="text" style="margin-top: 30px;">
-                        Kamu mendaftar dengan email :
-                    </div>
-                    <div style="margin: auto;width: fit-content;font-weight: bold;">
-                        {{email}}
-                    </div>
-                    <div class="text">
-                        OTP :
-                    </div>
-                    <div style="margin: auto;width: fit-content;border: solid rgb(223, 220, 220) 2px;padding: 10px;border-radius: 10px;
-                    background-color: whitesmoke;padding-left: 50px;padding-right: 50px;font-size: 30px;font-weight: bold;letter-spacing: 5px;">
-                        {{otp}}
-                    </div>
-                    <div class="text">
-                        OTP hanya berlaku sampai : 
-                    </div>
-                    <div style="margin: auto;width: fit-content;font-weight: bold;">
-                        {{expTime}}
+                    {{#renderProductFromCart cart}}{{/renderProductFromCart}}
+                    <div style="margin-top: 20px;">
+                        Terima kasih telah belanja di hearttoheart.
                     </div>
                 </div>
                 <div>
                     <img src="cid:footer" alt="footer" width="500" style="margin-bottom: -10px;"/> 
-                </div>
+                </div>  
+
+
             </div>
         </div>
 </body>
