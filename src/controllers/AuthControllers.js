@@ -261,9 +261,23 @@ module.exports={
                 from:"Sorry<hearttoheart@gmail.com>",
                 to:email,
                 subject:'OTP',
-                html:htmlemail
+                html:htmlemail,
+                attachments: 
+                [
+                    {
+                        filename: 'image.png',
+                        path: 'http://localhost:8000/frontend/logoblue.png',
+                        cid: 'logoblue' //same cid value as in the html img src
+                    },
+                    {
+                        filename: 'image2.png',
+                        path: 'http://localhost:8000/frontend/footeremail.png',
+                        cid: 'footer' //same cid value as in the html img src
+                    },
+                ]
             },(err)=>{
                 if(err){
+                    console.log(err)
                     return res.status(500).send({message:err.message})
                 }
                 console.log("OTP Berhasil dikirim")
