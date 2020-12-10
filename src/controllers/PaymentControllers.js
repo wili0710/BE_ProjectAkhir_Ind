@@ -4,6 +4,7 @@ const {createJWToken} = require('../helpers/jwt')
 const fs =require('fs')
 const handlebars=require('handlebars')
 const {uploader} = require('./../helpers/uploader')
+const { get } = require('../helpers/mailers')
 
 const DBTransaction=()=>{
     return new Promise((resolve,reject)=>{
@@ -120,46 +121,59 @@ module.exports={
         }
     },
     UploadPaymentTransfer:async(req,res)=>{
-        const {users_id,transaksi_id}=req.body
-        sql=`select * from transaksi
-        where id=${db.escape(transaksi_id)}`
-        const gettransaksi=await DbPROMselect(sql)
-
+        // console.log(req.body)
+        // const {users_id,transaksi_id}=req.body
+        
         await DBTransaction()
-        senttosql={
-            status:"waiting admin"
-        }
-        sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
-        const updateTransaksi=await DbPROMselect(sql)
-
+        
         const path='/buktipembayaran'
         const upload=uploader(path,'BUKTI').fields([{name:'bukti'}])
         upload(req,res,(err)=>{
             if(err){
                 return res.status(500).json({message:'Upload Bukti Pembayaran Gagal!',error:err.message})
             }
-            const {bukti} = req.files
-            // console.log(bukti)
-            const imagePath=bukti?path+'/'+bukti[0].filename:null
-            // console.log(imagePath)
             const data = JSON.parse(req.body.data)
-
-            let senttosql={
-                users_id,
-                transaksi_id,
-                image:imagePath,
-                tanggaltransaksi:new Date(),
-                status:"waiting admin",
-                totalpayment:gettransaksi[0].totaltransaksi
-            }
-            let sql=`insert into userpayment set ${db.escape(senttosql)}`
-            db.query(sql,(err)=>{
+            const {transaksi_id,users_id}=data
+            let sql=`select * from transaksi
+            where id=${db.escape(transaksi_id)}`
+            db.query(sql,(err,gettransaksi)=>{
                 if(err){
-                    if(imagePath){
-                        fs.unlinkSync('./public'+imagePath)
-                    }
-                    return res.status(500).send(err)
+                    console.log(err)
                 }
+                console.log(gettransaksi)
+                let senttosql={
+                    status:"waiting admin"
+                }
+                sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
+                db.query(sql,(err,updateTransaksi)=>{
+                    if(err){
+                        console.log(err)
+                    }
+                })
+                
+                const {bukti} = req.files
+                // console.log(bukti)
+                const imagePath=bukti?path+'/'+bukti[0].filename:null
+                // console.log(imagePath)
+                // const data = JSON.parse(req.body.data)
+                console.log(gettransaksi)
+                senttosql={
+                    users_id,
+                    transaksi_id,
+                    image:imagePath,
+                    tanggaltransaksi:new Date(),
+                    status:"waiting admin",
+                    totalpayment:gettransaksi[0].totaltransaksi
+                }
+                sql=`insert into userpayment set ${db.escape(senttosql)}`
+                db.query(sql,(err)=>{
+                    if(err){
+                        if(imagePath){
+                            fs.unlinkSync('./public'+imagePath)
+                        }
+                        return res.status(500).send(err)
+                    }
+                })
             })
             db.commit((err)=>{
                 if(err){

@@ -2,6 +2,19 @@ const {db}=require('../connections')
 const {uploader} = require('./../helpers/uploader')
 const fs=require('fs')
 
+// Wili tambah utk di cart edit
+const DbPROMselect=(sql)=>{
+    return new Promise((resolve,reject)=>{
+        db.query(sql,(err,results)=>{
+            if(err){
+                reject(err)
+            }else{
+                resolve(results)
+            }
+        })
+    })
+}
+// -----------------------------
 module.exports={
     
     addProduct:(req,res)=>{
@@ -271,6 +284,7 @@ module.exports={
             return res.send(result)
         })
     },
+
     getDataProductById:(req,res)=>{
         let {id} = req.body
         let sql=`select * from products where id = ${db.escape(id)};`
@@ -279,7 +293,26 @@ module.exports={
             if(err) return res.status(500).send(err)
             return res.send(result)
         })
-    }
+    },
+    // Wili tambah, utk di cart edit.
+    getAllProductByCategory:async(req,res)=>{
+        const {categoryproduct_id}=req.body
+        console.log(categoryproduct_id)
+        try {
+            let sql=`select p.id, p.nama, p.image, p.harga, p.stok, p.categoryproduct_id, 
+            p.hargapokok, cp.nama as categoryproduct, p.id as products_id  from products p
+            join categoryproduct cp on cp.id=p.categoryproduct_id
+            where p.isdeleted=0 and cp.isdeleted=0 and p.categoryproduct_id in (${db.escape(categoryproduct_id)});`
+            const getAllProductByCategory=await DbPROMselect(sql)
+            console.log(getAllProductByCategory)
+            return res.send(getAllProductByCategory)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({message:error.message})
+        }
+    },
+    
+    //----------------------------------
     
 
 

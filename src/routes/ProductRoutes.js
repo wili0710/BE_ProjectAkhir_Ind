@@ -25,5 +25,10 @@ Router.post('/getDataProductMakanan',ProductControllers.getDataProductMakanan)
 Router.post('/getDataProductChocolate',ProductControllers.getDataProductChocolate)
 Router.get('/getDataParcelById/:id',ProductControllers.getDataParcelById)
 Router.post('/getdataproductbyid',ProductControllers.getDataProductById)
+
+// wili nambah utk edit di cart
+Router.post('/getAllProductByCategory/',ProductControllers.getAllProductByCategory)
+
+
 module.exports=Router
 
