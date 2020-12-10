@@ -17,6 +17,8 @@ const DbPROMselect=(sql)=>{
 }
 
 module.exports={
+    
+
     newLogin:async(req,res)=>{
         const {email,password}=req.body
         try{
