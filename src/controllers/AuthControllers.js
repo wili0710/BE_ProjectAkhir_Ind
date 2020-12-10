@@ -3,6 +3,7 @@ const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend}=require('../help
 const {createJWToken} = require('../helpers/jwt')
 const fs =require('fs')
 const handlebars=require('handlebars')
+const moment = require('moment');
 
 const DbPROMselect=(sql)=>{
     return new Promise((resolve,reject)=>{
@@ -253,7 +254,8 @@ module.exports={
             const template=handlebars.compile(htmlrender) //return function
             const link= `${Link_Frontend}/register`
             const otp=`${otpnew.otp}`
-            const htmlemail=template({email:email,link:link,otp:otp})
+            const expTime=moment(otpnew.expTime).format('MMMM Do YYYY, h:mm:ss a')
+            const htmlemail=template({email:email,link:link,otp:otp,expTime:expTime})
 
             transporter.sendMail({
                 from:"Sorry<hearttoheart@gmail.com>",
@@ -269,7 +271,7 @@ module.exports={
             })
 
         }catch(err){
-            console.log('error di line 121')
+            console.log(err)
             return res.status(500).send(err)
         }
     },
