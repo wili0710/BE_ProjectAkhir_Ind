@@ -240,23 +240,26 @@ module.exports={
     
     //Table user di database yang non-null diubah menjadi hanya id dan email
     SentOtpRegister:async (req,res)=>{
-        console.log("jalan")
         let {email}=req.body
         let otpnew=OtpCreate()
         let senttosql={
             otp:otpnew.otptoken
         }
-        let sql=`select id,email from users where email = ${db.escape(email)}`
+        let sql=`select id,email,statusver from users where email = ${db.escape(email)}`
         try{
             const responduser=await DbPROMselect(sql)
             if(responduser.length){ 
+                console.log(responduser[0].statusver)
+                if(responduser[0].statusver==1){
+                    console.log("sudah ada")
+                    return res.send({message:"Email sudah terdaftar",isnext:false})
+                }
                 // Jika email sudah ada maka perbarui OTP
                 sql=`update users set ${db.escape(senttosql)} where id=${db.escape(responduser[0].id)}`
                 const userupdate=await DbPROMselect(sql)
             }else{
                 senttosql={...senttosql,email}
-                console.log("sent to sql")
-                console.log(senttosql)
+
                 sql=`insert into users set ${db.escape(senttosql)}`
                 const userupdate=await DbPROMselect(sql)
             }
@@ -309,7 +312,8 @@ module.exports={
             // Menyamakan OTP dari User dan Database
 
             if(istrue===true){
-                let senttosql={statusver:1,otp:""}
+                let senttosql={otp:""}
+                // let senttosql={statusver:1,otp:""}
                 // Update status verifikasi menjadi 1:Terverifikasi
                 sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
                 const userupdate=await DbPROMselect(sql)
@@ -336,7 +340,8 @@ module.exports={
             password:encrypt(password),
             lastlogin:new Date(),
             alamat,
-            nomortelfon
+            nomortelfon,
+            statusver:1
         }
 
         let sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
