@@ -6,6 +6,8 @@ const handlebars=require('handlebars')
 const {uploader} = require('./../helpers/uploader')
 const { get } = require('../helpers/mailers')
 var numeral = require('numeral');
+var createPDF = require('html-pdf');
+const path= require('path')
 
 const DBTransaction=()=>{
     return new Promise((resolve,reject)=>{
@@ -237,7 +239,9 @@ module.exports={
 
 
         const htmlrender=fs.readFileSync('./src/emailtemplate/transactionreceipt.html','utf8')
-            const template=handlebars.compile(htmlrender) //return function
+        const htmlpdfrender=fs.readFileSync('./src/emailtemplate/transactionreceiptpdf.html','utf8')
+        const templatepdf=handlebars.compile(htmlpdfrender) //return function
+        const template=handlebars.compile(htmlrender) //return function
 
 // ================================================================================================================================
 
@@ -291,6 +295,7 @@ module.exports={
             const renderProductFromCart=handlebars.registerHelper("renderProductFromCart", function(cart) {
                 let arr1= cart.transaksidetailsatuan.map((val,index)=>{
                     let totalsatuan=numeral(val.hargatotal).format('0,0')
+                    let totalsatuanDot=totalsatuan.replace(/,/g,'.')
                     return (
                         `<div style="
                         border-bottom:5px solid #f3f4f5;
@@ -313,7 +318,7 @@ module.exports={
                                 color:#fa5a1e;
                                 font-weight:700;
                             ">
-                                Rp ${totalsatuan}
+                                Rp ${totalsatuanDot}
                             </span>                        
                         </div>
                     </div>`
@@ -321,6 +326,7 @@ module.exports={
                 })
                 let arr2= cart.transaksiparcel.map((val,index)=>{
                     let totalparcel=numeral(val.hargatotal).format('0,0')
+                    let totalparcelDot=totalparcel.replace(/,/g,'.')
 
                     let detailparcel=cart.transaksidetailparcel.filter((filtering)=>{
                         return filtering.transaksidetail_id===val.transaksidetail_id
@@ -371,21 +377,21 @@ module.exports={
                                 color:#fa5a1e;
                                 font-weight:700;
                             ">
-                                Rp ${totalparcel}
+                                Rp ${totalparcelDot}
                             </span>
                         </div>
                     </div>`
                     )
                 })
-                console.log(arr2)
-                arr2.join()
-                // console.log("arr2")
-                // console.log(arr2)
-                arr1.join()
-                // console.log("arr1")
-                // console.log(arr1)
+
+                let sefinalarr2=arr2.join(" ")
+                arr2=sefinalarr2.replace(/,/g,'')
+
+                let sefinalarr1=arr1.join(" ")
+                arr1=sefinalarr1.replace(/,/g,'')
+
                 let prefinal=[arr2,arr1]
-                let final=prefinal.join()
+                let final=prefinal.join(" ")
                 return final
               });
 
@@ -394,33 +400,54 @@ module.exports={
             
             
             const totaltransaksi=numeral(getcart.transaksi[0].totaltransaksi).format('0,0')
-            const htmlemail=template({transaksi_id:transaksi_id,renderProductFromCart:renderProductFromCart,cart:getcart,totaltransaksi:totaltransaksi})
+            const senttotaltransaksi=totaltransaksi.replace(/,/g,'.')
+            const htmlemail=template({transaksi_id:transaksi_id,renderProductFromCart:renderProductFromCart,cart:getcart,totaltransaksi:senttotaltransaksi})
 
-
-            transporter.sendMail({
-                from:"Sorry<hearttoheart@gmail.com>",
-                to:email[0].email,
-                subject:'Transaction Receipt',
-                html:htmlemail,
-                attachments: 
-                [
-                    {
-                        filename: 'image.png',
-                        path: 'http://localhost:8000/frontend/logoblue.png',
-                        cid: 'logoblue' //same cid value as in the html img src
-                    },
-                    {
-                        filename: 'image2.png',
-                        path: 'http://localhost:8000/frontend/footeremail.png',
-                        cid: 'footer' //same cid value as in the html img src
-                    },
-                ]
-            },(err)=>{
-                if(err){
-                    return res.status(500).send({message:err.message})
-                }
-                console.log("Transaction Receipt berhasil dikirim")
+            const htmlpdf=templatepdf({
+                transaksi_id:transaksi_id,
+                renderProductFromCart:renderProductFromCart,
+                cart:getcart,totaltransaksi:senttotaltransaksi,
+                logo: 'file:///' + path.resolve(`./public`)+`/frontend/logoblue.png`,
+                footer: 'file:///' + path.resolve(`./public`)+`/frontend/footeremail.png`
             })
+              
+            let config={
+                format: "A4",
+                orientation: "portrait"
+            }
+
+            createPDF.create(htmlpdf,config).toStream(function(err, stream){
+                transporter.sendMail({
+                    from:"Sorry<hearttoheart@gmail.com>",
+                    to:email[0].email,
+                    subject:'Transaction Receipt',
+                    html:htmlemail,
+                    attachments: 
+                    [
+                        {
+                            filename: 'image.png',
+                            path: 'http://localhost:8000/frontend/logoblue.png',
+                            cid: 'logoblue' //same cid value as in the html img src
+                        },
+                        {
+                            filename: 'image2.png',
+                            path: 'http://localhost:8000/frontend/footeremail.png',
+                            cid: 'footer' //same cid value as in the html img src
+                        },
+                        {
+                            filename: "Payment Receipt.pdf",
+                            content:stream
+                        }
+                    ]
+                },(err)=>{
+                    if(err){
+                        return res.status(500).send({message:err.message})
+                    }
+                    console.log("Transaction Receipt berhasil dikirim")
+                })
+
+            });
+
 
         sql=`select up.id as payment_id,transaksi_id,
                 tanggaltransaksi,tglexp,image,totalpayment,t.totaltransaksi
