@@ -290,6 +290,7 @@ module.exports={
 
             const renderProductFromCart=handlebars.registerHelper("renderProductFromCart", function(cart) {
                 let arr1= cart.transaksidetailsatuan.map((val,index)=>{
+                    let totalsatuan=numeral(val.hargatotal).format('0,0')
                     return (
                         `<div style="
                         border-bottom:5px solid #f3f4f5;
@@ -302,23 +303,24 @@ module.exports={
                         ">
                             <img style="vertical-align: 0;" src="${val.image}" width="50" height="50"/>
                         </div>
-                        <div style="display: inline-block;margin-right: 170px;">
-                            <h6>${val.nama}</h6>
-                            Jumlah : ${val.qty}
+                        <div style="display: inline-block;margin-right: 100px;">
+                            <span class="text" style="display: block;">${val.nama}</span>
+                            <span class="text">Jumlah : ${val.qty}</span>
                         </div>
-                        <div style="display: inline-block;">
-                            <h6>Total</h6>  
+                        <div style="display: inline-block;float:right;text-align: right;">
+                            <span class="text" style="display: block;">Total</span>  
                             <span style="
                                 color:#fa5a1e;
                                 font-weight:700;
                             ">
-                                Rp ${numeral(val.hargatotal).format('0,0')}
+                                Rp ${totalsatuan}
                             </span>                        
                         </div>
                     </div>`
                     )
                 })
                 let arr2= cart.transaksiparcel.map((val,index)=>{
+                    let totalparcel=numeral(val.hargatotal).format('0,0')
                     let detailparcel=cart.transaksidetailparcel.filter((filtering)=>{
                         return filtering.transaksidetail_id===val.transaksidetail_id
                     })
@@ -326,7 +328,7 @@ module.exports={
                         return(
                             `<div>
                             <div>
-                                <h6>- ${detail.namaproduct} : ${detail.qtyproduct/detail.qtyparcel}</h6>
+                                <span class="text">- ${detail.namaproduct} : ${detail.qtyproduct/detail.qtyparcel}</span>
                             </div>
                         </div>`
                         )
@@ -337,35 +339,35 @@ module.exports={
                         border-bottom:5px solid #f3f4f5;
                         padding-top:10px;
                         padding-bottom:10px;
+                        height:fit-content;
                     ">
                         <div style="
                             margin-right:10px;
                             display: inline-block;
+                            float:left;
                         ">
-                            <img style="vertical-align: 320px;" src="${val.gambar}" width="50" height="50"/>
+                            <img src="${val.gambar}" width="50" height="50"/>
                         </div>
                         <div style="display: inline-block;width: 250px;">
-                            <h6>${val.nama}</h6>
-                            <h6>Jumlah : ${val.qty}</h6>
-                            <h6>Isi Parcel</h6>
+                            <span class="text" style="display: block;">${val.nama}</span>
+                            <span class="text" style="display: block;">Jumlah : ${val.qty}</span>
+                            <span class="text" style="display: block;">Isi Parcel</span>
                             <div>
                                 ${renderdetailparcel}
                             </div>
-                            <h6>Message Custom:</h6>
+                            <span class="text">Message Custom:</span>
                             <div style="border: 5px whitesmoke solid;padding: 5px; margin: auto;width: 250px;">
-                                <h6>
-                                    "${val.message}"
-                                </h6> 
+                                    <p style="word-wrap:break-word;">${val.message}</p>
                             </div>
                             
                         </div>
-                        <div style="display: inline-block;vertical-align: 320px;">
-                            <h6>Total</h6>
+                        <div style="display: inline-block;float:right;text-align: right;">
+                            <span class="text" style="display: block;">Total</span>
                             <span style="
                                 color:#fa5a1e;
                                 font-weight:700;
                             ">
-                                Rp ${numeral(val.hargatotal).format('0,0')}
+                                Rp ${totalparcel}
                             </span>
                         </div>
                     </div>`
