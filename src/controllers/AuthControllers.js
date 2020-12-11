@@ -3,6 +3,7 @@ const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend}=require('../help
 const {createJWToken} = require('../helpers/jwt')
 const fs =require('fs')
 const handlebars=require('handlebars')
+const moment = require('moment');
 
 const DbPROMselect=(sql)=>{
     return new Promise((resolve,reject)=>{
@@ -25,17 +26,22 @@ module.exports={
 
 
              // check total transaksi
-             sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail td
-             join transaksi t on t.id=td.transaksi_id
-             where t.users_id=${db.escape(getUser[0].id)} and isdeleted=0 and status="oncart";`
-             const updatetotaltransaksi=await DbPROMselect(sql)
-              
-             senttosql={
-                 totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
-                 totalmodal:updatetotaltransaksi[0].totalmodal
-             }
-             sql=`update transaksi set ${db.escape(senttosql)} where users_id=${db.escape(getUser[0].id)}`
-             const updatetransaksi=await DbPROMselect(sql)
+            sql=`select * from transaksi where users_id=${getUser[0].id} and status="oncart"`
+            const isOncart=await DbPROMselect(sql)
+            if(isOncart.length){
+                sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                where transaksi_id=${db.escape(isOncart[0].id)} and isdeleted=0;`
+                const updatetotaltransaksi=await DbPROMselect(sql)
+                console.log(updatetotaltransaksi[0].transaksi_id)
+                senttosql={
+                    totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                    totalmodal:updatetotaltransaksi[0].totalmodal
+                }
+                sql=`update transaksi set ${db.escape(senttosql)} where id=${isOncart[0].id}`
+                const updatetransaksi=await DbPROMselect(sql)
+                console.log(updatetransaksi)
+
+            }
  
              // Get All Transaksi parcel dan satuan.
              // Selanjutnya get sesuai parcel atau product id yg bukan 0
@@ -103,18 +109,23 @@ module.exports={
             const getUser = await DbPROMselect(sql)
             console.log(getUser[0].id)
             
-                // check total transaksi
-                sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail td
-            join transaksi t on t.id=td.transaksi_id
-            where t.users_id=${db.escape(getUser[0].id)} and isdeleted=0 and status="oncart";`
-            const updatetotaltransaksi=await DbPROMselect(sql)
-             
-            senttosql={
-                totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
-                totalmodal:updatetotaltransaksi[0].totalmodal
+            // check total transaksi
+
+            sql=`select * from transaksi where users_id=${getUser[0].id} and status="oncart"`
+            const isOncart=await DbPROMselect(sql)
+            if(isOncart.length){
+                sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
+                where transaksi_id=${db.escape(isOncart[0].id)} and isdeleted=0;`
+                const updatetotaltransaksi=await DbPROMselect(sql)
+                console.log(updatetotaltransaksi[0].transaksi_id)
+                senttosql={
+                    totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
+                    totalmodal:updatetotaltransaksi[0].totalmodal
+                }
+                sql=`update transaksi set ${db.escape(senttosql)} where id=${isOncart[0].id}`
+                const updatetransaksi=await DbPROMselect(sql)
+                console.log(updatetransaksi)
             }
-            sql=`update transaksi set ${db.escape(senttosql)} where users_id=${db.escape(getUser[0].id)}`
-            const updatetransaksi=await DbPROMselect(sql)
 
             // Get All Transaksi parcel dan satuan.
             // Selanjutnya get sesuai parcel atau product id yg bukan 0
@@ -229,23 +240,26 @@ module.exports={
     
     //Table user di database yang non-null diubah menjadi hanya id dan email
     SentOtpRegister:async (req,res)=>{
-        console.log("jalan")
         let {email}=req.body
         let otpnew=OtpCreate()
         let senttosql={
             otp:otpnew.otptoken
         }
-        let sql=`select id,email from users where email = ${db.escape(email)}`
+        let sql=`select id,email,statusver from users where email = ${db.escape(email)}`
         try{
             const responduser=await DbPROMselect(sql)
             if(responduser.length){ 
+                console.log(responduser[0].statusver)
+                if(responduser[0].statusver==1){
+                    console.log("sudah ada")
+                    return res.send({message:"Email sudah terdaftar",isnext:false})
+                }
                 // Jika email sudah ada maka perbarui OTP
                 sql=`update users set ${db.escape(senttosql)} where id=${db.escape(responduser[0].id)}`
                 const userupdate=await DbPROMselect(sql)
             }else{
                 senttosql={...senttosql,email}
-                console.log("sent to sql")
-                console.log(senttosql)
+
                 sql=`insert into users set ${db.escape(senttosql)}`
                 const userupdate=await DbPROMselect(sql)
             }
@@ -253,15 +267,30 @@ module.exports={
             const template=handlebars.compile(htmlrender) //return function
             const link= `${Link_Frontend}/register`
             const otp=`${otpnew.otp}`
-            const htmlemail=template({email:email,link:link,otp:otp})
+            const expTime=moment(otpnew.expTime).format('MMMM Do YYYY, h:mm:ss a')
+            const htmlemail=template({email:email,link:link,otp:otp,expTime:expTime})
 
             transporter.sendMail({
                 from:"Sorry<hearttoheart@gmail.com>",
                 to:email,
                 subject:'OTP',
-                html:htmlemail
+                html:htmlemail,
+                attachments: 
+                [
+                    {
+                        filename: 'image.png',
+                        path: 'http://localhost:8000/frontend/logoblue.png',
+                        cid: 'logoblue' //same cid value as in the html img src
+                    },
+                    {
+                        filename: 'image2.png',
+                        path: 'http://localhost:8000/frontend/footeremail.png',
+                        cid: 'footer' //same cid value as in the html img src
+                    },
+                ]
             },(err)=>{
                 if(err){
+                    console.log(err)
                     return res.status(500).send({message:err.message})
                 }
                 console.log("OTP Berhasil dikirim")
@@ -269,7 +298,7 @@ module.exports={
             })
 
         }catch(err){
-            console.log('error di line 121')
+            console.log(err)
             return res.status(500).send(err)
         }
     },
@@ -283,7 +312,8 @@ module.exports={
             // Menyamakan OTP dari User dan Database
 
             if(istrue===true){
-                let senttosql={statusver:1,otp:""}
+                let senttosql={otp:""}
+                // let senttosql={statusver:1,otp:""}
                 // Update status verifikasi menjadi 1:Terverifikasi
                 sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
                 const userupdate=await DbPROMselect(sql)
@@ -310,7 +340,8 @@ module.exports={
             password:encrypt(password),
             lastlogin:new Date(),
             alamat,
-            nomortelfon
+            nomortelfon,
+            statusver:1
         }
 
         let sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
