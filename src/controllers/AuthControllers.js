@@ -355,6 +355,18 @@ module.exports={
 
         })
     },
+
+    newDeleteUser:(req,res)=>{
+        let{id}=req.body
+        let sql=`update users set ? where id = ${db.escape(id)}`
+        let dataUpdate={
+            isdeleted:1
+        }
+        db.query(sql,dataUpdate,(err,result)=>{
+            if(err) return res.status(500).send(err)
+            return res.send(result)
+        })
+    },
     deleteUser:(req,res)=>{
         let {id}=req.body
         let sql=`delete from users where id =${id}`
