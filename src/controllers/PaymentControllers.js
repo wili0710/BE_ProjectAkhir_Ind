@@ -210,7 +210,7 @@ module.exports={
     ConfirmPayment:async(req,res)=>{
         const {payment_id,transaksi_id}=req.body
 
-        let senttosql={status:"confirmed"}
+        let senttosql={status:"onsent"}
         let sql=`update userpayment set ${db.escape(senttosql)} where id=${payment_id}`
         const updatePayment=await DbPROMselect(sql)
         console.log("update payment")
@@ -321,10 +321,11 @@ module.exports={
                 })
                 let arr2= cart.transaksiparcel.map((val,index)=>{
                     let totalparcel=numeral(val.hargatotal).format('0,0')
+
                     let detailparcel=cart.transaksidetailparcel.filter((filtering)=>{
                         return filtering.transaksidetail_id===val.transaksidetail_id
                     })
-                    let renderdetailparcel=detailparcel.map((detail,index)=>{
+                    let prerenderdetailparcel=detailparcel.map((detail,index)=>{
                         return(
                             `<div>
                             <div>
@@ -333,7 +334,10 @@ module.exports={
                         </div>`
                         )
                     })
-                    renderdetailparcel.join("\n")
+                    console.log(prerenderdetailparcel)
+                    let readytoreplace=prerenderdetailparcel.join("\n")
+                    let renderdetailparcel=readytoreplace.replace(/,/g,'')
+                    console.log(renderdetailparcel)
                     return (
                         `<div style="
                         border-bottom:5px solid #f3f4f5;
@@ -381,10 +385,7 @@ module.exports={
                 // console.log("arr1")
                 // console.log(arr1)
                 let prefinal=[arr2,arr1]
-                let fin=prefinal.join()
-                console.log(fin)
-                let final=fin.replace(/,/g,'')
-                console.log(final)
+                let final=prefinal.join()
                 return final
               });
 
