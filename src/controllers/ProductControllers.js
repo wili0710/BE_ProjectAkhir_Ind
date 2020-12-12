@@ -326,6 +326,8 @@ module.exports={
     },
     
     getRandomProduct:async(req,res)=>{
+        let {qty}=req.params
+
         let randomNumber
         let arrIndex=[]
         let arrId=[]
@@ -340,7 +342,7 @@ module.exports={
             randomNumber=Math.floor(Math.random()*getProduct.length)
             arrIndex.push(randomNumber+1)
             arrId.push(getProduct[randomNumber].id)
-            for(x=1;x<2;x++){                                                // x<= ? , ? diubah menjadi jumlah list produk yg diinginkan
+            for(x=1;x<qty;x++){                                                // x<= ? , ? diubah menjadi jumlah list produk yg diinginkan
                 do {
                     randomNumber=Math.floor(Math.random()*getProduct.length)
                     randomNumber+=1
@@ -366,7 +368,7 @@ module.exports={
             randomNumber=Math.floor(Math.random()*getParcel.length)
             arrIndex.push(randomNumber+1)
             arrId.push(getParcel[randomNumber].id)
-            for(x=1;x<2;x++){                                                // x<= ? , ? diubah menjadi jumlah list produk yg diinginkan
+            for(x=1;x<qty;x++){                                                // x<= ? , ? diubah menjadi jumlah list produk yg diinginkan
                 do {
                     randomNumber=Math.floor(Math.random()*getParcel.length)
                     randomNumber+=1
