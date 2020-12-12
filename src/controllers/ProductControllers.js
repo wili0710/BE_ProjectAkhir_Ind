@@ -2,7 +2,7 @@ const {db}=require('../connections')
 const {uploader} = require('./../helpers/uploader')
 const fs=require('fs')
 
-// Wili tambah utk di cart edit
+// Ditambah wili, jngn di hapus
 const DbPROMselect=(sql)=>{
     return new Promise((resolve,reject)=>{
         db.query(sql,(err,results)=>{
@@ -307,10 +307,10 @@ module.exports={
             return res.send(result)
         })
     },
-    // Wili tambah, utk di cart edit.
+    // Wili menambahkan dibawah ini, utk di cart page. Jangan di hapus kecuali klo di atas sudah ada yg sama respon yg dikirim
     getAllProductByCategory:async(req,res)=>{
         const {categoryproduct_id}=req.body
-        console.log(categoryproduct_id)
+
         try {
             let sql=`select p.id, p.nama, p.image, p.harga, p.stok, p.categoryproduct_id, 
             p.hargapokok, cp.nama as categoryproduct, p.id as products_id  from products p
@@ -325,7 +325,79 @@ module.exports={
         }
     },
     
-    //----------------------------------
+    getRandomProduct:async(req,res)=>{
+        let {qty}=req.params
+
+        let randomNumber
+        let arrIndex=[]
+        let arrId=[]
+        let isSame
+
+        try {
+        
+            // product Satuan    
+            let sql=`select id from products where isdeleted=0`
+            let getProduct=await DbPROMselect(sql)
+
+            randomNumber=Math.floor(Math.random()*getProduct.length)
+            arrIndex.push(randomNumber+1)
+            arrId.push(getProduct[randomNumber].id)
+            for(x=1;x<qty;x++){                                                // x<= ? , ? diubah menjadi jumlah list produk yg diinginkan
+                do {
+                    randomNumber=Math.floor(Math.random()*getProduct.length)
+                    randomNumber+=1
+                    isSame=arrIndex.find((finding)=>{
+                        return finding == randomNumber
+                    })
+                } while (isSame);    
+                arrIndex.push(randomNumber)   
+                console.log(arrIndex) 
+                arrId.push(getProduct[randomNumber-1].id)
+            }
+            console.log(arrId)
+            sql=`select * from products where id in (${db.escape(arrId)})`
+            const getRandomProductSatuan=await DbPROMselect(sql)
+            
+            // Parcel Random
+
+            sql=`select id from parcel where isdeleted=0`
+            let getParcel=await DbPROMselect(sql)
+
+            arrIndex=[]
+            arrId=[]
+            randomNumber=Math.floor(Math.random()*getParcel.length)
+            arrIndex.push(randomNumber+1)
+            arrId.push(getParcel[randomNumber].id)
+            for(x=1;x<qty;x++){                                                // x<= ? , ? diubah menjadi jumlah list produk yg diinginkan
+                do {
+                    randomNumber=Math.floor(Math.random()*getParcel.length)
+                    randomNumber+=1
+                    isSame=arrIndex.find((finding)=>{
+                        return finding == randomNumber
+                    })
+                } while (isSame);    
+
+                arrIndex.push(randomNumber)    
+                console.log(arrIndex) 
+                arrId.push(getParcel[randomNumber-1].id)
+            }
+            console.log(arrId)
+            sql=`select * from parcel where id in (${db.escape(arrId)})`
+            const getRandomProductParcel=await DbPROMselect(sql)
+
+            const sentData={
+                productSatuan:getRandomProductSatuan,
+                productParcel:getRandomProductParcel
+            }
+
+            return res.send(sentData)
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({message:error.message})
+        }
+    }
+    // End tambahan oleh wili utk di cart page----------------------------------
     
 
 
