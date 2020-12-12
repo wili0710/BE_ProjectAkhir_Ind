@@ -28,6 +28,8 @@ Router.post('/getdataproductbyid',ProductControllers.getDataProductById)
 
 // wili nambah utk edit di cart
 Router.post('/getAllProductByCategory/',ProductControllers.getAllProductByCategory)
+Router.get('/getRandomProduct/',ProductControllers.getRandomProduct)
+
 
 
 module.exports=Router
