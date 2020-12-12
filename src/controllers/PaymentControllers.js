@@ -412,7 +412,7 @@ module.exports={
             })
               
             let config={
-                format: "A4",
+                // format: "A4",
                 orientation: "portrait"
             }
 
