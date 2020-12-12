@@ -10,4 +10,6 @@ Router.post(`/changeadmin`,AuthControllers.changeAdmin)
 Router.post('/changeuser',AuthControllers.changeUser)
 Router.delete('/deleteuser',AuthControllers.deleteUser)
 Router.post('/newkeeplogin',AuthControllers.newKeepLogin)
+Router.post('/newdeleteuser',AuthControllers.newDeleteUser)
+
 module.exports=Router

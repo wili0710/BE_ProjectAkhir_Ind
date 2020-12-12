@@ -69,7 +69,20 @@ module.exports={
     },
     
     getAllProduct:(req,res)=>{
-        let sql=`select * from Products where isdeleted=0`
+        let sql=`select p.id as id, 
+        p.nama as nama, 
+        p.image as image, 
+        p.harga as harga, 
+        p.stok as stok, 
+        p.deskripsi as deskripsi,
+        p.categoryproduct_id as categoryproduct_id,
+        p.isdeleted as isdeleted,
+        p.hargapokok as hargapokok,
+        cp.nama as namaCategory
+        from products p
+        join categoryproduct cp
+        on p.categoryproduct_id = cp.id
+        where p.isdeleted = 0;`
         db.query(sql,(err,product)=>{
             if(err) return res.status(500).send({message:err})
             return res.send(product)
@@ -104,7 +117,7 @@ module.exports={
                         }
                         return res.status(500).send(err)
                     }
-                    let sql = `select * from products`
+                    let sql = `select * from products where isdeleted=0`
 
                     db.query(sql,(err,dataProduct)=>{
                         if(err) return res.status(500).send(err)
