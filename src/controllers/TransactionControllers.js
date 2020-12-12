@@ -11,6 +11,21 @@ const DBTransaction=()=>{
         })
     })
 }
+const DBCommit=()=>{
+    return new Promise((resolve,reject)=>{
+        db.commit((err)=>{
+            if(err){
+                console.log("ROLL BACK DB")
+                return db.rollback(()=>{
+                    reject(err)
+                })
+            } else{
+                console.log("Save DB")
+                resolve()
+            }
+        })
+    })
+}   
 const DbPROMselect=(sql)=>{
     return new Promise((resolve,reject)=>{
         db.query(sql,(err,results)=>{
@@ -201,18 +216,21 @@ module.exports={
         }
     },
 
-
     // AddToCart tidak menambah QTY tetapi mengupdate QTY
     AddToCart:async(req,res)=>{
-        console.log(req.body)
         const {user_id,products_id,parcel_id,qty,productforparcel_id,qtyproductforparcel,transaksidetail_id,message}=req.body
         let sql= `select * from transaksi where status='oncart' and users_id=${db.escape(user_id)}`
         try {
             await DBTransaction()
             const getdatatransaksi=await DbPROMselect(sql)
-    
+            
+            // Jika cart sudah ada transaksi
+            
             if (getdatatransaksi.length){
-                if(parcel_id==0){ // untuk bukan parcel beli product satuan
+
+                // untuk bukan parcel beli product satuan
+
+                if(parcel_id==0){ 
                     sql=`select * from transaksidetail where products_id=${db.escape(products_id)} 
                         and transaksi_id=${db.escape(getdatatransaksi[0].id)} and parcel_id=${db.escape(parcel_id)} and isdeleted=0`
                     const getdatatransaksidetail=await DbPROMselect(sql)
@@ -249,21 +267,6 @@ module.exports={
                         }
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
-
-                        // db.commit((err)=>{
-                        //     if(err){
-                        //         return db.rollback(()=>{
-                        //             res.status(500).send(err)
-                        //         })
-                        //     } 
-                        // })
-                        // Get All Transaksi parcel dan satuan.
-                        // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                        // sql=`select * from transaksidetail td
-                        // join transaksi t on td.transaksi_id=t.id
-                        // where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                        // const getcart=await DbPROMselect(sql)
-                        // return res.send(getcart)
     
                     }else{
                         let senttosql={
@@ -300,23 +303,12 @@ module.exports={
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
-                        // db.commit((err)=>{
-                        //     if(err){
-                        //         return db.rollback(()=>{
-                        //             res.status(500).send(err)
-                        //         })
-                        //     } 
-                        // })
-    
-                        // Get All Transaksi parcel dan satuan.
-                        // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                        // sql=`select * from transaksidetail td
-                        // join transaksi t on td.transaksi_id=t.id
-                        // where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                        // const datacart=await DbPROMselect(sql)
-                        // return res.send(datacart)
                     }
                 }else{
+
+                    console.log("cart ada masuk ke parcel")
+                    // Jika cart sudah ada, tambah parcel
+
                     sql=`select td.id from transaksidetail td
                         join transaksidetail_has_products tdhp
                         on tdhp.transaksidetail_id=td.id
@@ -325,7 +317,12 @@ module.exports={
                     const getdatatransaksidetail=await DbPROMselect(sql)
 
                     
+                    // Edit parcel
+
                     if(getdatatransaksidetail.length){    
+
+                        console.log("edit parcel")
+
                         sql=`select * from parcel where id=${parcel_id}`
                         const getparcel=await DbPROMselect(sql)                
                         senttosql={
@@ -336,18 +333,25 @@ module.exports={
                         }
                         sql=`update transaksidetail set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksidetail[0].id)}`
                         const updatetransaksidetail=await DbPROMselect(sql)
-                        sql=`select * from transaksidetail_has_products 
-                        where transaksidetail_id=${getdatatransaksidetail[0].id}`
-                        const gettdid=await DbPROMselect(sql)
-                        for(let x=1;x<=productforparcel_id.length;x++){
 
+                        // ambil semua ID Product di parcel dengan Transaksi Detail ID.
+
+                        // sql=`select * from transaksidetail_has_products 
+                        // where transaksidetail_id=${getdatatransaksidetail[0].id}`
+                        // const gettdid=await DbPROMselect(sql)
+
+                        // Hapus id product lama
+
+                        sql=`delete from transaksidetail_has_products where transaksidetail_id = ${db.escape(getdatatransaksidetail[0].id)}`
+                        const deleteOldItem=DbPROMselect(sql)
+
+                        for(let x=1;x<=productforparcel_id.length;x++){
                             senttosql={
-                                qty:parseInt(qtyproductforparcel[x-1])*parseInt(qty),
-                                products_id:productforparcel_id[x-1]
+                                transaksidetail_id:getdatatransaksidetail[0].id,
+                                products_id:productforparcel_id[x-1],
+                                qty:qtyproductforparcel[x-1]*qty,
                             }
-                            sql=`update transaksidetail_has_products set ${db.escape(senttosql)} 
-                            where transaksidetail_id=${db.escape(getdatatransaksidetail[0].id)}
-                            and id=${db.escape(gettdid[x-1].id)}`
+                            sql=`insert into transaksidetail_has_products set ${db.escape(senttosql)}`
                             const addproductinparcel=await DbPROMselect(sql)
 
                         }
@@ -365,7 +369,6 @@ module.exports={
                             sql=`update transaksidetail_has_products set ${db.escape(senttosql)}
                             where transaksidetail_id=${db.escape(getdatatransaksidetail[0].id)} and products_id=${productforparcel_id[x-1]}`
                             const updatehargatotal=await DbPROMselect(sql)
-
                         }
                         
                         sql=`select sum(hargatotalpokok) as modalparcel from transaksidetail_has_products 
@@ -389,21 +392,6 @@ module.exports={
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
-                        // db.commit((err)=>{
-                        //     if(err){
-                        //         return db.rollback(()=>{
-                        //             res.status(500).send(err)
-                        //         })
-                        //     } 
-                        // })
-    
-                        // Get All Transaksi parcel dan satuan.
-                        // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                        // sql=`select * from transaksidetail td
-                        // join transaksi t on td.transaksi_id=t.id
-                        // where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                        // const getcart=await DbPROMselect(sql)
-                        // return res.send(getcart)
                     }else{
                         sql=`select * from parcel where id=${parcel_id}`
                         const getparcel=await DbPROMselect(sql)
@@ -466,21 +454,6 @@ module.exports={
                         sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(getdatatransaksi[0].id)}`
                         const updatetransaksi=await DbPROMselect(sql)
 
-                        // db.commit((err)=>{
-                        //     if(err){
-                        //         return db.rollback(()=>{
-                        //             res.status(500).send(err)
-                        //         })
-                        //     } 
-                        // })
-    
-                        // Get All Transaksi parcel dan satuan.
-                        // Selanjutnya get sesuai parcel atau product id yg bukan 0
-                        // sql=`select * from transaksidetail td
-                        // join transaksi t on td.transaksi_id=t.id
-                        // where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0;`
-                        // const datacart=await DbPROMselect(sql)
-                        // return res.send(datacart)
                     }
                 }
             }else{
@@ -493,6 +466,7 @@ module.exports={
                 sql=`insert into transaksi set ${db.escape(senttosql)}`
                 const addcart=await DbPROMselect(sql)
 
+                // Cart kosong, tambah product satuan
                 if(parcel_id==0){
                     senttosql={
                         products_id:products_id,
@@ -530,6 +504,8 @@ module.exports={
                     
 
                 }else{
+                    // Cart kosong, tambah product parcel
+
                     sql=`select * from parcel where id=${parcel_id}`
                     const getparcel=await DbPROMselect(sql)
                     senttosql={
@@ -592,13 +568,9 @@ module.exports={
                 }
     
             }
-            db.commit((err)=>{
-                if(err){
-                    return db.rollback(()=>{
-                        res.status(500).send(err)
-                    })
-                } 
-            })
+
+            await DBCommit()
+
             // Get All Transaksi parcel dan satuan.
             // Selanjutnya get sesuai parcel atau product id yg bukan 0
             sql=`select * from transaksi
@@ -644,7 +616,7 @@ module.exports={
         }
     },
     GetCart:async(req,res)=>{
-        console.log(req.query)
+
         const {user_id}=req.query
         try {
             sql=`select * from transaksi where users_id=${user_id} and status="oncart"`
@@ -653,14 +625,13 @@ module.exports={
                 sql=`select sum(hargatotal) as totaltransaksi, sum(modal) as totalmodal from transaksidetail
                 where transaksi_id=${db.escape(isOncart[0].id)} and isdeleted=0;`
                 const updatetotaltransaksi=await DbPROMselect(sql)
-                console.log(updatetotaltransaksi[0].transaksi_id)
+
                 senttosql={
                     totaltransaksi:updatetotaltransaksi[0].totaltransaksi,
                     totalmodal:updatetotaltransaksi[0].totalmodal
                 }
                 sql=`update transaksi set ${db.escape(senttosql)} where id=${isOncart[0].id}`
                 const updatetransaksi=await DbPROMselect(sql)
-                console.log(updatetransaksi)
 
             }
 
@@ -702,7 +673,7 @@ module.exports={
                 transaksiparcel:gettransaksiparcel,
                 transaksidetailparcel:gettransaksidetailparcel
             }
-            console.log(getcart)
+
             return res.send(getcart)
         } catch (error) {
             console.log(error)
@@ -780,7 +751,7 @@ module.exports={
                 transaksiparcel:gettransaksiparcel,
                 transaksidetailparcel:gettransaksidetailparcel
             }
-            console.log(getcart)
+
             return res.send(getcart)
         } catch (error) {
             return res.status(500).send({message:error.message})

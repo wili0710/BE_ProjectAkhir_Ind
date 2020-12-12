@@ -297,7 +297,7 @@ module.exports={
     // Wili tambah, utk di cart edit.
     getAllProductByCategory:async(req,res)=>{
         const {categoryproduct_id}=req.body
-        console.log(categoryproduct_id)
+
         try {
             let sql=`select p.id, p.nama, p.image, p.harga, p.stok, p.categoryproduct_id, 
             p.hargapokok, cp.nama as categoryproduct, p.id as products_id  from products p

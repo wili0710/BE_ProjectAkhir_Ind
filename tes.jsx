@@ -1,5 +1,15 @@
-var numeral = require('numeral');
+let arr=[true,true,true]
+const isalltrue=()=>{
+    // let a=true
+    let a=arr.find((finding)=>{
+        console.log(finding)
+        return finding==false
+    })
+    console.log(a)
+    if(a!==false){
+        a=true
+    }
+    return a
+}
 
-totalparcel=numeral(20000000).format('0,0')
-
-console.log(totalparcel)
+console.log(isalltrue())
