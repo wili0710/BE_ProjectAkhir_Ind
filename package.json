@@ -1,6 +1,9 @@
 {
   "name": "be_projectakhir_kel2",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.x"
+  },
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,9 +15,6 @@
   },
   "author": "",
   "license": "ISC",
-  "engines": {
-    "node": "12.x"
-  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
