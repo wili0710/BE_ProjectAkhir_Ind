@@ -20,7 +20,7 @@ app.get('/',(req,res)=>{
     res.send('<h1>API Project Akhir Kelompok 2 </h1>')
 })
 // const {ProductRoutes,karyawanRoutes,usersRoutes,MongoRoutes,MongooseRouters,SocketRoutes} = require('./Routes')
-const {AuthRoutes, PaymentRoutes, TransactionRoutes,AdminRoutes,ProductRoutes,ParcelRoutes, ReportRoutes } = require('./src/Routes')
+const {AuthRoutes, PaymentRoutes, TransactionRoutes,AdminRoutes,ProductRoutes,ParcelRoutes, ReportRoutes } = require('./src/routes')
 
 app.use('/auth',AuthRoutes)
 app.use('/payment',PaymentRoutes)
