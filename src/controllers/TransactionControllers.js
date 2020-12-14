@@ -737,13 +737,7 @@ module.exports={
             where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0; `
             const gettransaksidetailparcel=await DbPROMselect(sql)
             
-            db.commit((err)=>{
-                if(err){
-                    return db.rollback(()=>{
-                        res.status(500).send(err)
-                    })
-                } 
-            })
+            await DBCommit()
 
             const getcart={
                 transaksi:gettransaksi,
