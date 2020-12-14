@@ -79,7 +79,7 @@ module.exports={
                 Penjualan_Parcel:Penjualan_Parcel[0].Penjualan_Parcel,
                 Pendapatan_Parcel:Pendapatan_Parcel[0].Pendapatan_Parcel
             }
-            console.log("kirim report income")
+
             res.send(senttofe)
         } catch (error) {
             return res.status(500).send({message:error.message})
@@ -87,13 +87,14 @@ module.exports={
     },
     ProductReport:async(req,res)=>{
         try {
+
             //-- Item Product Favorit Terjual ( Satuan )
             let sql=`select sum(qty) as qty,products_id,p.nama,p.image from (
                 select qty,products_id from transaksidetail td
                 join transaksi t on t.id=td.transaksi_id
                 where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")
                 union all
-                select qty,products_id from transaksidetail_has_products tdhp
+                select tdhp.qty,tdhp.products_id from transaksidetail_has_products tdhp
                 join transaksidetail td on td.id=tdhp.transaksidetail_id
                 join transaksi t on t.id=td.transaksi_id
                 where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")) ini
@@ -115,9 +116,32 @@ module.exports={
                 ItemProductFavorit:ItemProductFavorit,
                 ParcelFavorit:ParcelFavorit
             }
+            console.log(senttofe)
             res.send(senttofe)
         } catch (error) {
+            console.log(error)
             return res.status(500).send({message:error.message})
+        }
+    },
+    TransaksiReport:async(req,res)=>{
+        try {
+            let sql=`select * from transaksi where status in ("onsent","completed")`
+            let getTransaksi=await DbPROMselect(sql)
+            sql =`select * from transaksidetail td
+                join transaksi t on t.id=td.transaksi_id
+                join parcel p on p.id=td.parcel_id
+                where td.products_id=0 and t.status in ("onsent","completed")`
+            let getTransaksiDetail= await DbPROMselect(sql)
+
+            let senttofe={
+                transaksi:getTransaksi,
+                transaksiDetail:getTransaksiDetail
+            }
+            res.send(senttofe)
+        } catch (error) {
+            console.log(error)
+            res.send(error)
+            
         }
     }
 }

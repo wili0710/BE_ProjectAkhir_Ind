@@ -273,7 +273,63 @@ module.exports={
             transporter.sendMail({
                 from:"Sorry<hearttoheart@gmail.com>",
                 to:email,
-                subject:'OTP',
+                subject:'Registrasi OTP',
+                html:htmlemail,
+                attachments: 
+                [
+                    {
+                        filename: 'image.png',
+                        path: 'http://localhost:8000/frontend/logoblue.png',
+                        cid: 'logoblue' //same cid value as in the html img src
+                    },
+                    {
+                        filename: 'image2.png',
+                        path: 'http://localhost:8000/frontend/footeremail.png',
+                        cid: 'footer' //same cid value as in the html img src
+                    },
+                ]
+            },(err)=>{
+                if(err){
+                    console.log(err)
+                    return res.status(500).send({message:err.message})
+                }
+                console.log("OTP Berhasil dikirim")
+                return res.send(true)
+            })
+
+        }catch(err){
+            console.log(err)
+            return res.status(500).send(err)
+        }
+    },
+    ResetPassword_Otp: async(req,res)=>{
+        let {email}=req.body
+        let otpnew=OtpCreate()
+        let senttosql={
+            otp:otpnew.otptoken
+        }
+        let sql=`select id,email,statusver from users where email = ${db.escape(email)}`
+        try{
+            const responduser=await DbPROMselect(sql)
+            if(responduser.length==0){ 
+                console.log("Tidak Ada")
+                return res.send({message:"Email Tidak Terdaftar",isnext:false})
+            }else{
+                // Jika email sudah ada maka perbarui OTP
+                sql=`update users set ${db.escape(senttosql)} where id=${db.escape(responduser[0].id)}`
+                const userupdate=await DbPROMselect(sql)
+            }
+            const htmlrender=fs.readFileSync('./src/emailtemplate/otp.html','utf8')
+            const template=handlebars.compile(htmlrender) //return function
+            const link= `${Link_Frontend}/register`
+            const otp=`${otpnew.otp}`
+            const expTime=moment(otpnew.expTime).format('MMMM Do YYYY, h:mm:ss a')
+            const htmlemail=template({email:email,link:link,otp:otp,expTime:expTime})
+
+            transporter.sendMail({
+                from:"Sorry<hearttoheart@gmail.com>",
+                to:email,
+                subject:'Reset Password OTP',
                 html:htmlemail,
                 attachments: 
                 [
@@ -327,7 +383,25 @@ module.exports={
                 return res.status(200).send(message='OTP Expired')
             }
         }catch(err){
+            console.log(err)
             return res.status(500).send(err)
+        }
+    },
+    ResetPassword:async(req,res)=>{
+        try {
+            const {email,password}=req.body
+
+            let senttosql={password:encrypt(password)}
+            console.log(senttosql)
+            console.log(password)
+            let sql=`update users set ${db.escape(senttosql)} where email=${db.escape(email)}`
+
+            let updatepassword=await DbPROMselect(sql)
+            console.log(updatepassword)
+            res.send(true)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send(error)
         }
     },
     Register:async(req,res)=>{
