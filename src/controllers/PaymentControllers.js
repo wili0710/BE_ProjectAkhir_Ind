@@ -328,7 +328,7 @@ module.exports={
                             margin-right:10px;
                             display: inline-block;
                         ">
-                            <img style="vertical-align: 0;" src="${Link_Frontend+val.image}" width="50" height="50"/>
+                            <img style="vertical-align: 0;" src="http://localhost:8000/${val.image}" width="50" height="50"/>
                         </div>
                         <div style="display: inline-block;margin-right: 100px;">
                             <span class="text" style="display: block;">${val.nama}</span>
@@ -378,7 +378,7 @@ module.exports={
                             display: inline-block;
                             float:left;
                         ">
-                            <img src="${Link_Frontend+val.gambar}" width="50" height="50"/>
+                            <img src="http://localhost:8000/${val.gambar}" width="50" height="50"/>
                         </div>
                         <div style="display: inline-block;width: 250px;">
                             <span class="text" style="display: block;">${val.nama}</span>
@@ -414,6 +414,7 @@ module.exports={
     
                 let prefinal=[arr2,arr1]
                 let final=prefinal.join(" ")
+                console.log(final)
                 return final
                 });
     
@@ -501,6 +502,25 @@ module.exports={
         }
         let sql=`update userpayment set ${db.escape(senttosql)} where id=${db.escape(id)}`
         const updatedata=await DbPROMselect(sql)
-    }
+    },
+    // GetOnSentTransaksi:async(req,res)=>{
+    //     try {
+    //         let sql=`select * from transaksi where status ="onsent";`
+    //         let getTransaksi=await DbPROMselect(sql)
+    //         res.send(getTransaksi)
+    //     } catch (error) {
+    //         console.log(error)
+    //         res.send(error)
+    //     }
+    // }
+    // CreateCard:async(req,res)=>{
+    //     try {
+    //         const {transaksi_id}=req.body
+            
+    //     } catch (error) {
+    //         console.log(error)
+    //         res.send(error)
+    //     }
+    // }
     
 }
