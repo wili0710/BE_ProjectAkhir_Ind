@@ -20,7 +20,7 @@ module.exports={
         db.query(sql,(error,allparcel)=>{
             if(error) return response.status(500).send({message:error});
             ///* *** *//
-            console.log(allparcel)
+            // console.log(allparcel)
             let arr = [];
             allparcel.forEach((val)=>{
                 arr.push(QueryProm(
