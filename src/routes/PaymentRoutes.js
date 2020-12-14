@@ -5,5 +5,6 @@ Router.get('/getpaymentwaiting',PaymentControllers.GetPaymentInWaiting)
 Router.post('/confirmpayment',PaymentControllers.ConfirmPayment)
 Router.post('/uploadpayment',PaymentControllers.UploadPayment)
 Router.post('/uploadpaymenttransfer',PaymentControllers.UploadPaymentTransfer)
+Router.post('/rejectpayment',PaymentControllers.RejectPayment)
 
 module.exports=Router

@@ -26,7 +26,7 @@ module.exports={
             }
         })
         const imageFilter = (req,file,callback)=>{
-            const ext=/\.(jpg|jpeg|png|gif|pdf|doc|docx|xlsx|JPG)$/;
+            const ext=/\.(jpg|jpeg|png|gif|pdf|doc|docx|xlsx|JPG|PNG|webp|jfif)$/;
             if(!file.originalname.match(ext)){
                 return callback(new Error(`Only Selected file type are allowerd`),false)
             }

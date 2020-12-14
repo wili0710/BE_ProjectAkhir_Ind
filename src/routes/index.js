@@ -3,5 +3,7 @@ module.exports={
     PaymentRoutes:require('./PaymentRoutes'),
     TransactionRoutes:require('./TransactionRoutes'),
     AdminRoutes:require('./AdminRoutes'),
-    ProductRoutes:require('./ProductRoutes')
+    ProductRoutes:require('./ProductRoutes'),
+    ParcelRoutes:require('./ParcelRoutes'),
+    ReportRoutes:require(`./ReportRoutes`)
 }
