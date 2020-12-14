@@ -29,7 +29,7 @@ module.exports={
         db.query(sql,senttosql,(err,result)=>{
             if(err) return res.status(500).send({message:err})
             console.log('berhasil post data product')
-            sql=`select * from products`
+            sql=`select * from products where isdeleted=0`
             db.query(sql,(err,dataproduct)=>{
                 if(err) return res.status(500).send({message:err})
                 return res.send({dataproduct})
@@ -46,7 +46,7 @@ module.exports={
         db.query(sql,nama2,(err,result)=>{
             if(err) return res.status(500).send({message:err})
             console.log('berhasil post data cat parcel')
-            sql=`select * from categoryparcel`
+            sql=`select * from categoryparcel where isdeleted=0`
             db.query(sql,(err,datacatparcel)=>{
                 if(err)return res.status(500).send({message:err})
                 return res.send(datacatparcel)
@@ -60,7 +60,7 @@ module.exports={
         db.query(sql,nama2,(err,result)=>{
             if(err) return res.status(500).send({message:err})
             console.log('berhasil post data car product')
-            sql=`select * from categoryproduct`
+            sql=`select * from categoryproduct where isdeleted=0`
             db.query(sql,(err,datacatprod)=>{
                 if(err) return res.status(500).send({message:err})
                 return res.send(datacatprod)
