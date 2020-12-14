@@ -40,7 +40,7 @@ module.exports={
 
     addParcel:(request,response) => {
         const {nama, harga, categoryparcel_id, gambar, item} = request.body;
-        // console.log(nama,harga,categoryparcel_id,gambar,item);
+        console.log(nama,harga,categoryparcel_id,gambar,item);
         let datainsert = { 
             nama,                
             harga,               
@@ -64,7 +64,7 @@ module.exports={
                         arr.push(QueryProm(
                             `INSERT INTO parcel_has_categoryproduct
                                 SET parcel_id = ${db.escape(dataparcel[0].id)},
-                                    categoryproduct_id = ${db.escape(val.category_item)},
+                                    categoryproduct_id = ${db.escape(val.categoryproduct_id)},
                                     qty = ${db.escape(val.qty_item)}
                             `
                         ));
