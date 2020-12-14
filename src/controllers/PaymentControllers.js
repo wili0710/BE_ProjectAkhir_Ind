@@ -328,7 +328,7 @@ module.exports={
                             margin-right:10px;
                             display: inline-block;
                         ">
-                            <img style="vertical-align: 0;" src="${val.image}" width="50" height="50"/>
+                            <img style="vertical-align: 0;" src="${Link_Frontend+val.image}" width="50" height="50"/>
                         </div>
                         <div style="display: inline-block;margin-right: 100px;">
                             <span class="text" style="display: block;">${val.nama}</span>
@@ -378,7 +378,7 @@ module.exports={
                             display: inline-block;
                             float:left;
                         ">
-                            <img src="${val.gambar}" width="50" height="50"/>
+                            <img src="${Link_Frontend+val.gambar}" width="50" height="50"/>
                         </div>
                         <div style="display: inline-block;width: 250px;">
                             <span class="text" style="display: block;">${val.nama}</span>

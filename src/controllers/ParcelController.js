@@ -93,6 +93,7 @@ module.exports={
                             });
                         });
                     }).catch((error)=>{
+                        
                         if(error) return db.rollback(()=>{response.status(500).send(error)});
                         //* *** *//
                         return response.status(500).send(error);
