@@ -378,7 +378,7 @@ module.exports={
                             display: inline-block;
                             float:left;
                         ">
-                            <img src="http://localhost:8000/${val.gambar}" width="50" height="50"/>
+                            <img src="${val.gambar}" width="50" height="50"/>
                         </div>
                         <div style="display: inline-block;width: 250px;">
                             <span class="text" style="display: block;">${val.nama}</span>
