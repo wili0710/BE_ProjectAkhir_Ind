@@ -398,6 +398,7 @@ module.exports={
             return res.send(result)
         })
     },
+    
     deleteUser:(req,res)=>{
         let {id}=req.body
         let sql=`delete from users where id =${id}`

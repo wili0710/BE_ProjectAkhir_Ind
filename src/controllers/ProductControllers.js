@@ -396,8 +396,22 @@ module.exports={
             console.log(error)
             return res.status(500).send({message:error.message})
         }
-    }
+    },
     // End tambahan oleh wili utk di cart page----------------------------------
+    getCartSatuanRandom:(req,res)=>{
+        let {id}= req.body
+        let sql = `select * from products where id = ${db.escape(id)}`
+
+        db.query(sql,(err,dataSatuan)=>{
+            if(err) return res.status(500).send(err)
+             return res.send(dataSatuan)
+        })
+    }
+
+
+   
+
+
     
 
 
