@@ -7,9 +7,14 @@ const otpcreate=()=>{
         otp=parseInt(otp)
         otp=`${otp}`
     } while (otp.length!==4);
+
+    let expTime = new Date()
+    expTime.setMinutes(expTime.getMinutes()+1)
+    
     let newotp={
         otp:otp,
-        otptoken:jwt.sign({otp},"spiritking",{expiresIn:'1m'})
+        otptoken:jwt.sign({otp},"spiritking",{expiresIn:'1m'}),
+        expTime:expTime
     }
     return newotp
 }

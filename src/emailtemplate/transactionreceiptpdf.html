@@ -9,11 +9,18 @@
         .box1{
             height: 100%;
             width: 100%;
-            background-color: #f0f0f3;
+            background-color: white;
             padding: 50px;
+            margin-top: 20px;
+        }
+        .wrapsubbox1{
+            width: 500px;
+            background-color: white;
+            border-radius: 10px;
+            margin: auto;
+            font-size: 18px;
         }
         .subbox1{
-            width: fit-content;
             padding-bottom: 20px;
             margin: auto;
         }
@@ -23,6 +30,7 @@
             border-radius: 10px;
             margin: auto;
             font-size: 18px;
+            border: 2px solid #f0f0f3 ;
         }
         .subbox2-1{
             padding: 30px;
@@ -42,14 +50,17 @@
         .text{
             margin: 10px;
             font-size: 18px;
-            /* line-height: 37px; */
         }
     </style>
 </head>
 <body>
         <div class="box1">
-            <div class="subbox1">
-                <img src="cid:logoblue" alt="hearttoheart" width="400"/>
+            <div class="wrapsubbox1">
+                <div class="subbox1" style="margin: auto;">
+                    <center>
+                        <img src="{{logo}}" alt="hearttoheart" width="400"/>
+                    </center>
+                </div>
             </div>
             <div class="box2">
                 <div class="subbox2-1">
@@ -83,10 +94,8 @@
                     </div>
                 </div>
                 <div>
-                    <img src="cid:footer" alt="footer" width="500"/> 
+                    <img  src="{{footer}}" alt="footer" width="500"/> 
                 </div>  
-
-
             </div>
         </div>
 </body>
