@@ -79,7 +79,7 @@ module.exports={
                 Penjualan_Parcel:Penjualan_Parcel[0].Penjualan_Parcel,
                 Pendapatan_Parcel:Pendapatan_Parcel[0].Pendapatan_Parcel
             }
-
+            console.log(senttofe)
             res.send(senttofe)
         } catch (error) {
             return res.status(500).send({message:error.message})
@@ -87,30 +87,61 @@ module.exports={
     },
     ProductReport:async(req,res)=>{
         try {
+            let {page}=req.query
+            let ItemProductFavorit
+            let ParcelFavorit
+            if(page){
+                //-- Item Product Favorit Terjual ( Satuan )
+                let sql=`select sum(qty) as qty,products_id,p.nama,p.image from (
+                    select qty,products_id from transaksidetail td
+                    join transaksi t on t.id=td.transaksi_id
+                    where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")
+                    union all
+                    select tdhp.qty,tdhp.products_id from transaksidetail_has_products tdhp
+                    join transaksidetail td on td.id=tdhp.transaksidetail_id
+                    join transaksi t on t.id=td.transaksi_id
+                    where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")) ini
+                    join products p on p.id=ini.products_id
+                    group by products_id
+                    order by qty DESC
+                    limit ${(page-1)*10},10;`
+                ItemProductFavorit=await DbPROMselect(sql)
 
-            //-- Item Product Favorit Terjual ( Satuan )
-            let sql=`select sum(qty) as qty,products_id,p.nama,p.image from (
-                select qty,products_id from transaksidetail td
+                // -- Parcel Paket Favorit
+                sql=`select sum(qty) as qty, p.nama,p.gambar from transaksidetail td
+                join parcel p on p.id=td.parcel_id
                 join transaksi t on t.id=td.transaksi_id
-                where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")
-                union all
-                select tdhp.qty,tdhp.products_id from transaksidetail_has_products tdhp
-                join transaksidetail td on td.id=tdhp.transaksidetail_id
+                where td.products_id=0 and td.isdeleted=0 and t.status in ("onsent","completed")
+                group by parcel_id 
+                order by qty desc
+                limit ${(page-1)*10},10;`
+                ParcelFavorit=await DbPROMselect(sql)
+            }else{
+                //-- Item Product Favorit Terjual ( Satuan )
+                let sql=`select sum(qty) as qty,products_id,p.nama,p.image from (
+                    select qty,products_id from transaksidetail td
+                    join transaksi t on t.id=td.transaksi_id
+                    where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")
+                    union all
+                    select tdhp.qty,tdhp.products_id from transaksidetail_has_products tdhp
+                    join transaksidetail td on td.id=tdhp.transaksidetail_id
+                    join transaksi t on t.id=td.transaksi_id
+                    where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")) ini
+                    join products p on p.id=ini.products_id
+                    group by products_id
+                    order by qty DESC;`
+                ItemProductFavorit=await DbPROMselect(sql)
+                
+                // -- Parcel Paket Favorit
+                sql=`select sum(qty) as qty, p.nama,p.gambar from transaksidetail td
+                join parcel p on p.id=td.parcel_id
                 join transaksi t on t.id=td.transaksi_id
-                where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")) ini
-                join products p on p.id=ini.products_id
-                group by products_id
-                order by qty DESC;`
-            const ItemProductFavorit=await DbPROMselect(sql)
-            
-            // -- Parcel Paket Favorit
-            sql=`select sum(qty) as qty, p.nama,p.gambar from transaksidetail td
-            join parcel p on p.id=td.parcel_id
-            join transaksi t on t.id=td.transaksi_id
-            where td.products_id=0 and td.isdeleted=0 and t.status in ("onsent","completed")
-            group by parcel_id 
-            order by qty desc;`
-            const ParcelFavorit=await DbPROMselect(sql)
+                where td.products_id=0 and td.isdeleted=0 and t.status in ("onsent","completed")
+                group by parcel_id 
+                order by qty desc;`
+                ParcelFavorit=await DbPROMselect(sql)
+
+            }
 
             const senttofe={
                 ItemProductFavorit:ItemProductFavorit,
@@ -125,13 +156,27 @@ module.exports={
     },
     TransaksiReport:async(req,res)=>{
         try {
-            let sql=`select * from transaksi where status in ("onsent","completed")`
-            let getTransaksi=await DbPROMselect(sql)
-            sql =`select * from transaksidetail td
-                join transaksi t on t.id=td.transaksi_id
-                join parcel p on p.id=td.parcel_id
-                where td.products_id=0 and t.status in ("onsent","completed")`
-            let getTransaksiDetail= await DbPROMselect(sql)
+            let {page}=req.query
+            let getTransaksi
+            let getTransaksiDetail
+            if(page){
+                let sql=`select * from transaksi where status in ("onsent","completed") order by id desc limit ${(page-1)*5},5`
+                getTransaksi=await DbPROMselect(sql)
+                sql =`select * from transaksidetail td
+                    join transaksi t on t.id=td.transaksi_id
+                    join parcel p on p.id=td.parcel_id
+                    where td.products_id=0 and t.status in ("onsent","completed") order by td.id desc
+                    limit ${(page-1)*5},5`
+                getTransaksiDetail= await DbPROMselect(sql)
+            }else{
+                let sql=`select * from transaksi where status in ("onsent","completed") order by id desc`
+                getTransaksi=await DbPROMselect(sql)
+                sql =`select * from transaksidetail td
+                    join transaksi t on t.id=td.transaksi_id
+                    join parcel p on p.id=td.parcel_id
+                    where td.products_id=0 and t.status in ("onsent","completed") order by td.id desc`
+                getTransaksiDetail= await DbPROMselect(sql)
+            }
 
             let senttofe={
                 transaksi:getTransaksi,
