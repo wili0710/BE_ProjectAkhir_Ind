@@ -129,9 +129,9 @@ module.exports={
             return res.status(500).send({message:error.message})
         }
     },
-    UploadPaymentTransfer:async(req,res)=>{
+    UploadPaymentTransfer:(req,res)=>{
         
-        await DBTransaction()
+        // await DBTransaction()
         
         const path='/buktipembayaran'
         const upload=uploader(path,'BUKTI').fields([{name:'bukti'}])
@@ -180,7 +180,7 @@ module.exports={
                 })
             })
         })
-        await DBCommit()
+        // await DBCommit()
         return res.send(true)
 
     },
