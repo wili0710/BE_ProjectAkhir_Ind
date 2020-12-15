@@ -6,4 +6,5 @@ Router.post ('/addparcel',       ParcelController.addParcel       );
 Router.post ('/uploadimage',     ParcelController.uploadParcelImg );
 Router.post ('/deleteimage',     ParcelController.deleteParcelImg );
 Router.post ('/deleteparcel',    ParcelController.deleteParcel    );
+Router.post ('/updateparcel',    ParcelController.updateParcel    );
 module.exports = Router;
