@@ -147,13 +147,13 @@ module.exports={
             let senttosql={
                 status:"waiting admin"
             }
+            const {transaksi_id,users_id}=data
             let sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
             db.query(sql,(err,updateTransaksi)=>{
                 if(err){
                     console.log(err)
                 }
                 console.log("transaksi ke update")
-                const {transaksi_id,users_id}=data
                 sql=`select * from transaksi
                 where id=${db.escape(transaksi_id)}`
                 db.query(sql,(err,gettransaksi)=>{
