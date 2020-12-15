@@ -9,8 +9,8 @@ require('dotenv').config()
 const PORT = process.env.PORT || 8000
 
 
-app.use(cors({ origin: 'https://h2h.wiliromario.com' , credentials :  true}))
-// app.use(cors())
+// app.use(cors({ origin: 'https://h2h.wiliromario.com' , credentials :  true}))
+app.use(cors())
 // app.use((req,res,next)=>{
 //     res.header('Access-Control-Allow-Origin','*')
 //     next()
