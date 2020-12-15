@@ -1,5 +1,5 @@
 const {db}=require('../connections')
-const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend}=require('../helpers')
+const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend, Link_Backend}=require('../helpers')
 const {createJWToken} = require('../helpers/jwt')
 const fs =require('fs')
 const handlebars=require('handlebars')
@@ -279,12 +279,12 @@ module.exports={
                 [
                     {
                         filename: 'image.png',
-                        path: 'http://localhost:8000/frontend/logoblue.png',
+                        path: `${Link_Backend}/frontend/logoblue.png`,
                         cid: 'logoblue' //same cid value as in the html img src
                     },
                     {
                         filename: 'image2.png',
-                        path: 'http://localhost:8000/frontend/footeremail.png',
+                        path: `${Link_Backend}/frontend/footeremail.png`,
                         cid: 'footer' //same cid value as in the html img src
                     },
                 ]
@@ -335,12 +335,12 @@ module.exports={
                 [
                     {
                         filename: 'image.png',
-                        path: 'http://localhost:8000/frontend/logoblue.png',
+                        path: `${Link_Backend}/frontend/logoblue.png`,
                         cid: 'logoblue' //same cid value as in the html img src
                     },
                     {
                         filename: 'image2.png',
-                        path: 'http://localhost:8000/frontend/footeremail.png',
+                        path: `${Link_Backend}/frontend/footeremail.png`,
                         cid: 'footer' //same cid value as in the html img src
                     },
                 ]
