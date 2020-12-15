@@ -137,6 +137,7 @@ module.exports={
         const upload=uploader(path,'BUKTI').fields([{name:'bukti'}])
         upload(req,res,(err)=>{
             if(err){
+                console.log(err)
                 return res.status(500).json({message:'Upload Bukti Pembayaran Gagal!',error:err.message})
             }
             const {bukti} = req.files
@@ -151,6 +152,7 @@ module.exports={
                 if(err){
                     console.log(err)
                 }
+                console.log("transaksi ke update")
                 const {transaksi_id,users_id}=data
                 sql=`select * from transaksi
                 where id=${db.escape(transaksi_id)}`
@@ -169,13 +171,14 @@ module.exports={
                     sql=`insert into userpayment set ${db.escape(senttosql)}`
                     db.query(sql,(err)=>{
                         if(err){
+                            console.log(err)
                             if(imagePath){
                                 fs.unlinkSync('./public'+imagePath)
                             }
                             return res.status(500).send(err)
                         }
-                        // await DBCommit()
-                        return res.send(true)
+                        console.log("Jalan sampai akhir")
+                        return res.status(200).send({message:"Berhasil Upload Pembayaran"})
                     })
                 })
             })
