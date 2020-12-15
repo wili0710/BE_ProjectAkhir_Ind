@@ -1,5 +1,5 @@
 const {db}=require('../connections')
-const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend}=require('../helpers')
+const {encrypt,transporter,OtpCreate, OtpConfirm,Link_Frontend, Link_Backend}=require('../helpers')
 const {createJWToken} = require('../helpers/jwt')
 const fs =require('fs')
 const handlebars=require('handlebars')
@@ -129,60 +129,60 @@ module.exports={
             return res.status(500).send({message:error.message})
         }
     },
-    UploadPaymentTransfer:async(req,res)=>{
+    UploadPaymentTransfer:(req,res)=>{
         
-        await DBTransaction()
+        // await DBTransaction()
         
         const path='/buktipembayaran'
         const upload=uploader(path,'BUKTI').fields([{name:'bukti'}])
         upload(req,res,(err)=>{
             if(err){
+                console.log(err)
                 return res.status(500).json({message:'Upload Bukti Pembayaran Gagal!',error:err.message})
             }
+            const {bukti} = req.files
+            const imagePath=bukti?path+'/'+bukti[0].filename:null
             const data = JSON.parse(req.body.data)
+            
+            let senttosql={
+                status:"waiting admin"
+            }
             const {transaksi_id,users_id}=data
-            let sql=`select * from transaksi
-            where id=${db.escape(transaksi_id)}`
-            db.query(sql,(err,gettransaksi)=>{
+            let sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
+            db.query(sql,(err,updateTransaksi)=>{
                 if(err){
                     console.log(err)
                 }
-                let senttosql={
-                    status:"waiting admin"
-                }
-                sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
-                db.query(sql,(err,updateTransaksi)=>{
+                console.log("transaksi ke update")
+                sql=`select * from transaksi
+                where id=${db.escape(transaksi_id)}`
+                db.query(sql,(err,gettransaksi)=>{
                     if(err){
                         console.log(err)
                     }
-                })
-                
-                const {bukti} = req.files
-
-                const imagePath=bukti?path+'/'+bukti[0].filename:null
-
-                senttosql={
-                    users_id,
-                    transaksi_id,
-                    image:imagePath,
-                    tanggaltransaksi:new Date(),
-                    status:"waiting admin",
-                    totalpayment:gettransaksi[0].totaltransaksi
-                }
-                sql=`insert into userpayment set ${db.escape(senttosql)}`
-                db.query(sql,(err)=>{
-                    if(err){
-                        if(imagePath){
-                            fs.unlinkSync('./public'+imagePath)
-                        }
-                        return res.status(500).send(err)
+                    senttosql={
+                        users_id,
+                        transaksi_id,
+                        image:imagePath,
+                        tanggaltransaksi:new Date(),
+                        status:"waiting admin",
+                        totalpayment:gettransaksi[0].totaltransaksi
                     }
+                    sql=`insert into userpayment set ${db.escape(senttosql)}`
+                    db.query(sql,(err)=>{
+                        if(err){
+                            console.log(err)
+                            if(imagePath){
+                                fs.unlinkSync('./public'+imagePath)
+                            }
+                            return res.status(500).send(err)
+                        }
+                        console.log("Jalan sampai akhir")
+                        return res.status(200).send({message:"Berhasil Upload Pembayaran"})
+                    })
                 })
             })
         })
-        await DBCommit()
-        return res.send(true)
-
     },
     // GetPaymentInWaiting untuk get data payment yang status waiting admin
     GetPaymentInWaiting:async(req,res)=>{
@@ -328,7 +328,7 @@ module.exports={
                             margin-right:10px;
                             display: inline-block;
                         ">
-                            <img style="vertical-align: 0;" src="http://localhost:8000/${val.image}" width="50" height="50"/>
+                            <img style="vertical-align: 0;" src="${Link_Backend}/${val.image}" width="50" height="50"/>
                         </div>
                         <div style="display: inline-block;margin-right: 100px;">
                             <span class="text" style="display: block;">${val.nama}</span>
@@ -449,12 +449,12 @@ module.exports={
                         [
                             {
                                 filename: 'image.png',
-                                path: 'http://localhost:8000/frontend/logoblue.png',
+                                path: `${Link_Backend}/frontend/logoblue.png`,
                                 cid: 'logoblue' //same cid value as in the html img src
                             },
                             {
                                 filename: 'image2.png',
-                                path: 'http://localhost:8000/frontend/footeremail.png',
+                                path: `${Link_Backend}/frontend/footeremail.png`,
                                 cid: 'footer' //same cid value as in the html img src
                             },
                             {
