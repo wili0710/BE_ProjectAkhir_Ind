@@ -139,50 +139,47 @@ module.exports={
             if(err){
                 return res.status(500).json({message:'Upload Bukti Pembayaran Gagal!',error:err.message})
             }
+            const {bukti} = req.files
+            const imagePath=bukti?path+'/'+bukti[0].filename:null
             const data = JSON.parse(req.body.data)
-            const {transaksi_id,users_id}=data
-            let sql=`select * from transaksi
-            where id=${db.escape(transaksi_id)}`
-            db.query(sql,(err,gettransaksi)=>{
+            
+            let senttosql={
+                status:"waiting admin"
+            }
+            let sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
+            db.query(sql,(err,updateTransaksi)=>{
                 if(err){
                     console.log(err)
                 }
-                let senttosql={
-                    status:"waiting admin"
-                }
-                sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
-                db.query(sql,(err,updateTransaksi)=>{
+                const {transaksi_id,users_id}=data
+                sql=`select * from transaksi
+                where id=${db.escape(transaksi_id)}`
+                db.query(sql,(err,gettransaksi)=>{
                     if(err){
                         console.log(err)
                     }
-                })
-                
-                const {bukti} = req.files
-
-                const imagePath=bukti?path+'/'+bukti[0].filename:null
-
-                senttosql={
-                    users_id,
-                    transaksi_id,
-                    image:imagePath,
-                    tanggaltransaksi:new Date(),
-                    status:"waiting admin",
-                    totalpayment:gettransaksi[0].totaltransaksi
-                }
-                sql=`insert into userpayment set ${db.escape(senttosql)}`
-                db.query(sql,(err)=>{
-                    if(err){
-                        if(imagePath){
-                            fs.unlinkSync('./public'+imagePath)
-                        }
-                        return res.status(500).send(err)
+                    senttosql={
+                        users_id,
+                        transaksi_id,
+                        image:imagePath,
+                        tanggaltransaksi:new Date(),
+                        status:"waiting admin",
+                        totalpayment:gettransaksi[0].totaltransaksi
                     }
+                    sql=`insert into userpayment set ${db.escape(senttosql)}`
+                    db.query(sql,(err)=>{
+                        if(err){
+                            if(imagePath){
+                                fs.unlinkSync('./public'+imagePath)
+                            }
+                            return res.status(500).send(err)
+                        }
+                        // await DBCommit()
+                        return res.send(true)
+                    })
                 })
             })
         })
-        // await DBCommit()
-        return res.send(true)
-
     },
     // GetPaymentInWaiting untuk get data payment yang status waiting admin
     GetPaymentInWaiting:async(req,res)=>{
