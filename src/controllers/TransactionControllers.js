@@ -1,4 +1,6 @@
 const {db}=require('../connections')
+const { getcart } = require('../helpers')
+const { trace } = require('../routes/AuthRoutes')
 
 const DBTransaction=()=>{
     return new Promise((resolve,reject)=>{
@@ -705,6 +707,8 @@ module.exports={
             sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
             const updatetransaksi=await DbPROMselect(sql)
             
+            await DBCommit()
+
             // Get All Transaksi parcel dan satuan.
             // Selanjutnya get sesuai parcel atau product id yg bukan 0
             sql=`select * from transaksi
@@ -737,7 +741,7 @@ module.exports={
             where t.status='oncart' and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0; `
             const gettransaksidetailparcel=await DbPROMselect(sql)
             
-            await DBCommit()
+            
 
             const getcart={
                 transaksi:gettransaksi,
@@ -751,4 +755,31 @@ module.exports={
             return res.status(500).send({message:error.message})
         }
     },
+    Checkout:async(req,res)=>{
+        console.log(req.body)
+        const {transaksi_id,users_id,alamatPengiriman,catatanTambahan,namaPengirim,namaPenerima}=req.body
+        try {
+            let databack={
+                status:"Belum dibayar",
+                lastupdate:new Date(),
+                catatantambahan:catatanTambahan,
+                alamatpengiriman:alamatPengiriman,
+                namaPenerima,
+                namaPengirim
+            }
+            let sql=`update transaksi set ${db.escape(databack)} where id=${db.escape(transaksi_id)}`
+            let sentdataback=await DbPROMselect(sql)
+
+            console.log(sentdataback)
+
+            let sendfront=await getcart(users_id)
+
+            console.log(sendfront)
+
+            res.send(sendfront)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).send({message:error.message})
+        }
+    }
 }
