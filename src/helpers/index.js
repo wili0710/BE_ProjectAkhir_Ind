@@ -7,6 +7,7 @@ module.exports={
     OtpCreate       : require('./OtpCreate'),
     OtpConfirm      : require('./OtpConfirm'),
     getcart         : require('./getcart'),
+    gettransaksilist: require('./gettransaksilist.js'),
     Link_Frontend   : "http://localhost:3000",
     Link_Backend    : "http://localhost:8000",
     // Link_Frontend   : "http://h2h.wiliromario.com",
