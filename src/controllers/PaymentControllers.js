@@ -69,7 +69,7 @@ module.exports={
             const upload=await DbPROMselect(sql)
 
             senttosql={
-                status:"onsent"
+                status:"Pesanan Diproses"
             }
             sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
             const updateTransaksi=await DbPROMselect(sql)
@@ -145,7 +145,7 @@ module.exports={
             const data = JSON.parse(req.body.data)
             
             let senttosql={
-                status:"waiting admin"
+                status:"Menunggu Konfirmasi"
             }
             const {transaksi_id,users_id}=data
             let sql=`update transaksi set ${db.escape(senttosql)} where id=${db.escape(transaksi_id)}`
@@ -165,7 +165,7 @@ module.exports={
                         transaksi_id,
                         image:imagePath,
                         tanggaltransaksi:new Date(),
-                        status:"waiting admin",
+                        status:"Menunggu Konfirmasi",
                         totalpayment:gettransaksi[0].totaltransaksi
                     }
                     sql=`insert into userpayment set ${db.escape(senttosql)}`
@@ -195,7 +195,7 @@ module.exports={
             from userpayment up
             join transaksi t
             on up.transaksi_id=t.id
-            where up.status="waiting admin"
+            where up.status="Menunggu Konfirmasi"
             limit ${(page-1)*3},3
             ;`
         }else{
@@ -204,7 +204,7 @@ module.exports={
             from userpayment up
             join transaksi t
             on up.transaksi_id=t.id
-            where up.status="waiting admin"
+            where up.status="Menunggu Konfirmasi"
             ;`
         }
         const getData=await DbPROMselect(sql)
@@ -220,7 +220,7 @@ module.exports={
             
             await DBTransaction()
     
-            let senttosql={status:"onsent"}
+            let senttosql={status:"Pesanan Dikirim"}
             let sql=`update userpayment set ${db.escape(senttosql)} where id=${payment_id}`
             const updatePayment=await DbPROMselect(sql)
     
@@ -503,24 +503,5 @@ module.exports={
         let sql=`update userpayment set ${db.escape(senttosql)} where id=${db.escape(id)}`
         const updatedata=await DbPROMselect(sql)
     },
-    // GetOnSentTransaksi:async(req,res)=>{
-    //     try {
-    //         let sql=`select * from transaksi where status ="onsent";`
-    //         let getTransaksi=await DbPROMselect(sql)
-    //         res.send(getTransaksi)
-    //     } catch (error) {
-    //         console.log(error)
-    //         res.send(error)
-    //     }
-    // }
-    // CreateCard:async(req,res)=>{
-    //     try {
-    //         const {transaksi_id}=req.body
-            
-    //     } catch (error) {
-    //         console.log(error)
-    //         res.send(error)
-    //     }
-    // }
     
 }

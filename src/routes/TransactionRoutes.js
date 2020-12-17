@@ -6,5 +6,6 @@ Router.get('/getcart',TransactionControllers.GetCart)
 Router.post('/removefromcart',TransactionControllers.RemoveFromCart)
 Router.post('/addtocartproduct',TransactionControllers.AddToCartProduct)
 Router.post('/checkout',TransactionControllers.Checkout)
+Router.post('/gettransaksilist',TransactionControllers.GetTransaksiList)
 
 module.exports=Router
