@@ -38,36 +38,36 @@ module.exports={
             
             // -- Penjualan Keseluruhan
             sql=`select sum(totaltransaksi) as Penjualan from transaksi
-            where status in  ("onsent","completed");`
+            where status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi");`
             const Penjualan=await DbPROMselect(sql)
 
             // -- Pendapatan Bersih keseluruhan
             sql=`select sum(totaltransaksi-totalmodal) as Pendapatan from transaksi
-            where status in ("onsent","completed");`
+            where status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi");`
             const Pendapatan=await DbPROMselect(sql)
 
             // -- Pendapatan Kotor dari Barang Satuan yg sudah onsent dan completed
             sql=`select sum(td.hargatotal) as Penjualan_Satuan from transaksi t 
             join transaksidetail td on t.id=td.transaksi_id
-            where status in ("onsent","completed") and td.isdeleted=0 and td.parcel_id=0;`
+            where status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi") and td.isdeleted=0 and td.parcel_id=0;`
             const Penjualan_Satuan=await DbPROMselect(sql)
 
             // -- Pendapatan Bersih dari Barang Satuan yg sudah onsent dan completed
             sql=`select sum(td.hargatotal-td.modal) as Pendapatan_Satuan from transaksi t 
             join transaksidetail td on t.id=td.transaksi_id
-            where status in ("onsent","completed") and td.isdeleted=0 and td.parcel_id=0;`
+            where status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi") and td.isdeleted=0 and td.parcel_id=0;`
             const Pendapatan_Satuan=await DbPROMselect(sql)
 
             // -- Penjualan dari Parcel yang sudah onsent dan completed
             sql=`select sum(td.hargatotal) as Penjualan_Parcel from transaksi t 
             join transaksidetail td on t.id=td.transaksi_id
-            where status in ("onsent","completed") and td.isdeleted=0 and td.products_id=0;`
+            where status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi") and td.isdeleted=0 and td.products_id=0;`
             const Penjualan_Parcel=await DbPROMselect(sql)
 
             // -- Pendapatan bersih dari parcel yang sudah onsent dan completed
             sql=`select sum(td.hargatotal-td.modal) as Pendapatan_Parcel from transaksi t 
             join transaksidetail td on t.id=td.transaksi_id
-            where status in ("onsent","completed") and td.isdeleted=0 and td.products_id=0;`
+            where status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi") and td.isdeleted=0 and td.products_id=0;`
             const Pendapatan_Parcel=await DbPROMselect(sql)
 
             const senttofe={
@@ -95,12 +95,12 @@ module.exports={
                 let sql=`select sum(qty) as qty,products_id,p.nama,p.image from (
                     select qty,products_id from transaksidetail td
                     join transaksi t on t.id=td.transaksi_id
-                    where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")
+                    where td.parcel_id=0 and isdeleted=0 and t.status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi")
                     union all
                     select tdhp.qty,tdhp.products_id from transaksidetail_has_products tdhp
                     join transaksidetail td on td.id=tdhp.transaksidetail_id
                     join transaksi t on t.id=td.transaksi_id
-                    where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")) ini
+                    where td.parcel_id=0 and isdeleted=0 and t.status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi")) ini
                     join products p on p.id=ini.products_id
                     group by products_id
                     order by qty DESC
@@ -111,7 +111,7 @@ module.exports={
                 sql=`select sum(qty) as qty, p.nama,p.gambar from transaksidetail td
                 join parcel p on p.id=td.parcel_id
                 join transaksi t on t.id=td.transaksi_id
-                where td.products_id=0 and td.isdeleted=0 and t.status in ("onsent","completed")
+                where td.products_id=0 and td.isdeleted=0 and t.status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi")
                 group by parcel_id 
                 order by qty desc
                 limit ${(page-1)*10},10;`
@@ -121,12 +121,12 @@ module.exports={
                 let sql=`select sum(qty) as qty,products_id,p.nama,p.image from (
                     select qty,products_id from transaksidetail td
                     join transaksi t on t.id=td.transaksi_id
-                    where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")
+                    where td.parcel_id=0 and isdeleted=0 and t.status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi")
                     union all
                     select tdhp.qty,tdhp.products_id from transaksidetail_has_products tdhp
                     join transaksidetail td on td.id=tdhp.transaksidetail_id
                     join transaksi t on t.id=td.transaksi_id
-                    where td.parcel_id=0 and isdeleted=0 and t.status in ("onsent","completed")) ini
+                    where td.parcel_id=0 and isdeleted=0 and t.status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi")) ini
                     join products p on p.id=ini.products_id
                     group by products_id
                     order by qty DESC;`
@@ -136,7 +136,7 @@ module.exports={
                 sql=`select sum(qty) as qty, p.nama,p.gambar from transaksidetail td
                 join parcel p on p.id=td.parcel_id
                 join transaksi t on t.id=td.transaksi_id
-                where td.products_id=0 and td.isdeleted=0 and t.status in ("onsent","completed")
+                where td.products_id=0 and td.isdeleted=0 and t.status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi")
                 group by parcel_id 
                 order by qty desc;`
                 ParcelFavorit=await DbPROMselect(sql)
@@ -160,21 +160,21 @@ module.exports={
             let getTransaksi
             let getTransaksiDetail
             if(page){
-                let sql=`select * from transaksi where status in ("onsent","completed") order by id desc limit ${(page-1)*5},5`
+                let sql=`select * from transaksi where status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi") order by id desc limit ${(page-1)*5},5`
                 getTransaksi=await DbPROMselect(sql)
                 sql =`select * from transaksidetail td
                     join transaksi t on t.id=td.transaksi_id
                     join parcel p on p.id=td.parcel_id
-                    where td.products_id=0 and t.status in ("onsent","completed") order by td.id desc
+                    where td.products_id=0 and t.status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi") order by td.id desc
                     limit ${(page-1)*5},5`
                 getTransaksiDetail= await DbPROMselect(sql)
             }else{
-                let sql=`select * from transaksi where status in ("onsent","completed") order by id desc`
+                let sql=`select * from transaksi where status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi") order by id desc`
                 getTransaksi=await DbPROMselect(sql)
                 sql =`select * from transaksidetail td
                     join transaksi t on t.id=td.transaksi_id
                     join parcel p on p.id=td.parcel_id
-                    where td.products_id=0 and t.status in ("onsent","completed") order by td.id desc`
+                    where td.products_id=0 and t.status not in  ("Belum Dibayar","oncart","Menunggu Konfirmasi") order by td.id desc`
                 getTransaksiDetail= await DbPROMselect(sql)
             }
 
