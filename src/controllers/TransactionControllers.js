@@ -795,21 +795,24 @@ module.exports={
         try {
             const {user_id}=req.body
             let sql=`select * from transaksi
-            where status not in ('oncart') and users_id=${db.escape(user_id)}`
+            where status not in ('oncart') and users_id=${db.escape(user_id)}
+            order by id desc`
             const gettransaksi=await DbPROMselect(sql)
             
             sql=`select td.transaksi_id as transaksi_id,products_id, nama, image, td.id as transaksidetail_id, harga as hargasatuan, 
             td.hargatotal, td.qty from transaksi t
             join transaksidetail td on td.transaksi_id=t.id
             join products p on p.id=td.products_id
-            where t.status not in ('oncart') and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.parcel_id=0;`
+            where t.status not in ('oncart') and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.parcel_id=0
+            order by t.id desc;`
             const gettransaksidetailsatuan=await DbPROMselect(sql)
             
             sql=`select td.transaksi_id as transaksi_id,td.parcel_id, nama, gambar, td.id as transaksidetail_id, harga as hargasatuan, 
             td.hargatotal, td.qty, td.message from transaksi t
             join transaksidetail td on td.transaksi_id=t.id
             join parcel p on p.id=td.parcel_id
-            where t.status not in ('oncart') and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0;`
+            where t.status not in ('oncart') and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0
+            order by t.id desc;`
             const gettransaksiparcel=await DbPROMselect(sql)
 
             sql=`select td.transaksi_id as transaksi_id,td.id as transaksidetail_id,td.parcel_id as parcel_id, 
@@ -821,7 +824,8 @@ module.exports={
             join products p on p.id=tdhp.products_id
             join parcel pa on pa.id=td.parcel_id
             join categoryproduct cp on cp.id=p.categoryproduct_id
-            where t.status not in ('oncart') and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0; `
+            where t.status not in ('oncart') and t.users_id=${db.escape(user_id)} and td.isdeleted=0 and td.products_id=0
+            order by t.id desc; `
             const gettransaksidetailparcel=await DbPROMselect(sql)
 
             const getTransaksiList={
