@@ -220,7 +220,7 @@ module.exports={
             
             await DBTransaction()
     
-            let senttosql={status:"Pesanan Dikirim"}
+            let senttosql={status:"Pesanan Diproses"}
             let sql=`update userpayment set ${db.escape(senttosql)} where id=${payment_id}`
             const updatePayment=await DbPROMselect(sql)
     
