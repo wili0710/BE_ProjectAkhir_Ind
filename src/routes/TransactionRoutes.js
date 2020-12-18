@@ -8,5 +8,8 @@ Router.post('/addtocartproduct',TransactionControllers.AddToCartProduct)
 Router.post('/checkout',TransactionControllers.Checkout)
 Router.post('/gettransaksilist',TransactionControllers.GetTransaksiList)
 Router.post('/confirmbarangsampai',TransactionControllers.ConfirmBarangSampai)
+Router.get('/gettransaksineedtoprocess',TransactionControllers.TransaksiNeedToProcess)
+Router.post('/confirmtransaksiprosesdone',TransactionControllers.Confirmprosesdone)
+
 
 module.exports=Router
