@@ -464,6 +464,7 @@ module.exports={
                         ]
                     },(err)=>{
                         if(err){
+                            console.log(err)
                             return res.status(500).send({message:err.message})
                         }
                         console.log("Transaction Receipt berhasil dikirim")
