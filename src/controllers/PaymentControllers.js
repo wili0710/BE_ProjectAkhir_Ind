@@ -417,7 +417,7 @@ module.exports={
                 console.log(final)
                 return final
                 });
-    
+                console.log("aman 1")
     
     // ================================================================================================================================
                 
@@ -433,7 +433,9 @@ module.exports={
                     logo: 'file:///' + path.resolve(`./public`)+`/frontend/logoblue.png`,
                     footer: 'file:///' + path.resolve(`./public`)+`/frontend/footeremail.png`
                 })
-                  
+
+                console.log("aman 2")
+
                 let config={
                     // format: "A4",
                     orientation: "portrait"
@@ -465,6 +467,7 @@ module.exports={
                     },(err)=>{
                         if(err){
                             console.log(err)
+                            console.log(err.message)
                             return res.status(500).send({message:err.message})
                         }
                         console.log("Transaction Receipt berhasil dikirim")
