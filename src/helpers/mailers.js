@@ -3,7 +3,7 @@ let transporter=nodemailer.createTransport({
     service:'gmail',
     auth:{
         user:'wiliromarioakukom@gmail.com',
-        pass:'bmlzvaibgswapkdn'
+        pass:'xvztiqnzxwlbhtwm'
     },
     tls: {
         rejectUnauthorized:false
